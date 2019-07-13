@@ -1,0 +1,6 @@
+syntax="proto3";
+package smsg;
+
+message Server2AllSession{
+    bytes data = 1;
+}

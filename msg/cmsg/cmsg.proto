@@ -1,0 +1,104 @@
+syntax="proto3";
+package cmsg;
+
+message ReqHello{
+
+}
+
+message RespHello{
+
+}
+
+message ReqLogin{
+    enum LoginType{
+        Invalid = 0;
+        Visitor = 1;
+        WXGame = 2;
+    }
+    LoginType loginType = 1;
+    string token = 2;
+    string nickname = 3;
+}
+
+message ReqJoinGame{
+
+}
+
+message RespJoinGame{
+
+}
+
+
+
+message SNoticeGameOver{
+    message Killer{
+        int32 accountType = 1;
+        string nickname = 2;
+        string headImgUrl = 3;
+        int32 hp = 4;
+    }
+    int32 overReason = 1;
+    Killer killer = 2;
+    int32 gameLeftSec = 3;
+}
+
+message ReqMove{
+    float pressTime = 1;
+    float targetRotation = 2;
+    int32 inputSeqID = 3;
+}
+
+message ReqShoot{
+
+}
+
+message ReqJump{
+
+}
+
+//断线重连，请求当前场景信息
+message ReqGameScene{
+    message Entity{
+        int32 entityID = 1;
+        int32 accountType = 2;
+        bool dead = 3;
+        string headImgUrl = 4;
+        int32 hp = 5;
+        int32 score = 6;
+        bool new = 7;
+    }
+    repeated Entity entitys = 1;
+    int32 gameLeftSec = 2;
+}
+
+//子弹发送
+message SNoticeShoot{
+    float x = 1;
+    float y = 2;
+    float rotation = 3;
+    int32 bulletID = 4;
+    uint64 creatorUserID = 5;
+}
+
+message SNoticeWorldChange{
+    message Entity{
+        int32 id = 1;
+        int32 hp = 2;
+        int32 score = 3;
+        int32 killCount = 4;
+    }
+    repeated int32 deleteBullets = 1;
+    repeated int32 deleteEntitys = 2;
+    repeated Entity changedEntitys = 3;
+}
+
+
+message SNoticeWorldPos{
+    message Entity{
+        int32 id = 1;
+        int32 x = 2;
+        int32 y = 3;
+        int32 rotation = 4;
+    }
+    repeated Entity entitys = 1;
+}
