@@ -8,19 +8,22 @@ It is generated from these files:
 	msg/cmsg/cmsg.proto
 
 It has these top-level messages:
-	ReqHello
-	RespHello
 	ReqLogin
+	RespLogin
 	ReqJoinGame
 	RespJoinGame
+	SNoticeEnterGame
+	Rank
 	SNoticeGameOver
 	ReqMove
 	ReqShoot
 	ReqJump
 	ReqGameScene
+	RespGameScene
 	SNoticeShoot
 	SNoticeWorldChange
 	SNoticeWorldPos
+	SNoticeGameReconnect
 */
 package cmsg
 
@@ -39,63 +42,80 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
-type ReqLogin_LoginType int32
+type RespLogin_Error int32
 
 const (
-	ReqLogin_Invalid ReqLogin_LoginType = 0
-	ReqLogin_Visitor ReqLogin_LoginType = 1
-	ReqLogin_WXGame  ReqLogin_LoginType = 2
+	RespLogin_Invalid  RespLogin_Error = 0
+	RespLogin_RPCError RespLogin_Error = 1
 )
 
-var ReqLogin_LoginType_name = map[int32]string{
+var RespLogin_Error_name = map[int32]string{
 	0: "Invalid",
-	1: "Visitor",
-	2: "WXGame",
+	1: "RPCError",
 }
-var ReqLogin_LoginType_value = map[string]int32{
-	"Invalid": 0,
-	"Visitor": 1,
-	"WXGame":  2,
+var RespLogin_Error_value = map[string]int32{
+	"Invalid":  0,
+	"RPCError": 1,
 }
 
-func (x ReqLogin_LoginType) String() string {
-	return proto.EnumName(ReqLogin_LoginType_name, int32(x))
+func (x RespLogin_Error) String() string {
+	return proto.EnumName(RespLogin_Error_name, int32(x))
 }
-func (ReqLogin_LoginType) EnumDescriptor() ([]byte, []int) { return fileDescriptor0, []int{2, 0} }
+func (RespLogin_Error) EnumDescriptor() ([]byte, []int) { return fileDescriptor0, []int{1, 0} }
 
-type ReqHello struct {
+type RespJoinGame_Error int32
+
+const (
+	RespJoinGame_Invalid        RespJoinGame_Error = 0
+	RespJoinGame_UserNotExisted RespJoinGame_Error = 1
+	RespJoinGame_AlreadyInGame  RespJoinGame_Error = 2
+)
+
+var RespJoinGame_Error_name = map[int32]string{
+	0: "Invalid",
+	1: "UserNotExisted",
+	2: "AlreadyInGame",
+}
+var RespJoinGame_Error_value = map[string]int32{
+	"Invalid":        0,
+	"UserNotExisted": 1,
+	"AlreadyInGame":  2,
 }
 
-func (m *ReqHello) Reset()                    { *m = ReqHello{} }
-func (m *ReqHello) String() string            { return proto.CompactTextString(m) }
-func (*ReqHello) ProtoMessage()               {}
-func (*ReqHello) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
+func (x RespJoinGame_Error) String() string {
+	return proto.EnumName(RespJoinGame_Error_name, int32(x))
+}
+func (RespJoinGame_Error) EnumDescriptor() ([]byte, []int) { return fileDescriptor0, []int{3, 0} }
 
-type RespHello struct {
+type RespGameScene_Error int32
+
+const (
+	RespGameScene_Invalid      RespGameScene_Error = 0
+	RespGameScene_GameNotExist RespGameScene_Error = 1
+)
+
+var RespGameScene_Error_name = map[int32]string{
+	0: "Invalid",
+	1: "GameNotExist",
+}
+var RespGameScene_Error_value = map[string]int32{
+	"Invalid":      0,
+	"GameNotExist": 1,
 }
 
-func (m *RespHello) Reset()                    { *m = RespHello{} }
-func (m *RespHello) String() string            { return proto.CompactTextString(m) }
-func (*RespHello) ProtoMessage()               {}
-func (*RespHello) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{1} }
+func (x RespGameScene_Error) String() string {
+	return proto.EnumName(RespGameScene_Error_name, int32(x))
+}
+func (RespGameScene_Error) EnumDescriptor() ([]byte, []int) { return fileDescriptor0, []int{11, 0} }
 
 type ReqLogin struct {
-	LoginType ReqLogin_LoginType `protobuf:"varint,1,opt,name=loginType,enum=cmsg.ReqLogin_LoginType" json:"loginType,omitempty"`
-	Token     string             `protobuf:"bytes,2,opt,name=token" json:"token,omitempty"`
-	Nickname  string             `protobuf:"bytes,3,opt,name=nickname" json:"nickname,omitempty"`
+	Token string `protobuf:"bytes,1,opt,name=token" json:"token,omitempty"`
 }
 
 func (m *ReqLogin) Reset()                    { *m = ReqLogin{} }
 func (m *ReqLogin) String() string            { return proto.CompactTextString(m) }
 func (*ReqLogin) ProtoMessage()               {}
-func (*ReqLogin) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{2} }
-
-func (m *ReqLogin) GetLoginType() ReqLogin_LoginType {
-	if m != nil {
-		return m.LoginType
-	}
-	return ReqLogin_Invalid
-}
+func (*ReqLogin) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
 
 func (m *ReqLogin) GetToken() string {
 	if m != nil {
@@ -104,39 +124,249 @@ func (m *ReqLogin) GetToken() string {
 	return ""
 }
 
-func (m *ReqLogin) GetNickname() string {
+type RespLogin struct {
+	Err    RespLogin_Error `protobuf:"varint,1,opt,name=err,enum=cmsg.RespLogin_Error" json:"err,omitempty"`
+	UserID uint64          `protobuf:"varint,2,opt,name=userID" json:"userID,omitempty"`
+	Token  string          `protobuf:"bytes,3,opt,name=token" json:"token,omitempty"`
+}
+
+func (m *RespLogin) Reset()                    { *m = RespLogin{} }
+func (m *RespLogin) String() string            { return proto.CompactTextString(m) }
+func (*RespLogin) ProtoMessage()               {}
+func (*RespLogin) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{1} }
+
+func (m *RespLogin) GetErr() RespLogin_Error {
+	if m != nil {
+		return m.Err
+	}
+	return RespLogin_Invalid
+}
+
+func (m *RespLogin) GetUserID() uint64 {
+	if m != nil {
+		return m.UserID
+	}
+	return 0
+}
+
+func (m *RespLogin) GetToken() string {
+	if m != nil {
+		return m.Token
+	}
+	return ""
+}
+
+type ReqJoinGame struct {
+	Nickname string `protobuf:"bytes,1,opt,name=nickname" json:"nickname,omitempty"`
+}
+
+func (m *ReqJoinGame) Reset()                    { *m = ReqJoinGame{} }
+func (m *ReqJoinGame) String() string            { return proto.CompactTextString(m) }
+func (*ReqJoinGame) ProtoMessage()               {}
+func (*ReqJoinGame) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{2} }
+
+func (m *ReqJoinGame) GetNickname() string {
 	if m != nil {
 		return m.Nickname
 	}
 	return ""
 }
 
-type ReqJoinGame struct {
-}
-
-func (m *ReqJoinGame) Reset()                    { *m = ReqJoinGame{} }
-func (m *ReqJoinGame) String() string            { return proto.CompactTextString(m) }
-func (*ReqJoinGame) ProtoMessage()               {}
-func (*ReqJoinGame) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{3} }
-
 type RespJoinGame struct {
+	Err RespJoinGame_Error `protobuf:"varint,1,opt,name=err,enum=cmsg.RespJoinGame_Error" json:"err,omitempty"`
 }
 
 func (m *RespJoinGame) Reset()                    { *m = RespJoinGame{} }
 func (m *RespJoinGame) String() string            { return proto.CompactTextString(m) }
 func (*RespJoinGame) ProtoMessage()               {}
-func (*RespJoinGame) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{4} }
+func (*RespJoinGame) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{3} }
+
+func (m *RespJoinGame) GetErr() RespJoinGame_Error {
+	if m != nil {
+		return m.Err
+	}
+	return RespJoinGame_Invalid
+}
+
+type SNoticeEnterGame struct {
+	Config      *SNoticeEnterGame_Config `protobuf:"bytes,2,opt,name=config" json:"config,omitempty"`
+	EntityID    int32                    `protobuf:"varint,3,opt,name=entityID" json:"entityID,omitempty"`
+	GameLeftSec int32                    `protobuf:"varint,4,opt,name=gameLeftSec" json:"gameLeftSec,omitempty"`
+	Nickname    string                   `protobuf:"bytes,5,opt,name=nickname" json:"nickname,omitempty"`
+}
+
+func (m *SNoticeEnterGame) Reset()                    { *m = SNoticeEnterGame{} }
+func (m *SNoticeEnterGame) String() string            { return proto.CompactTextString(m) }
+func (*SNoticeEnterGame) ProtoMessage()               {}
+func (*SNoticeEnterGame) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{4} }
+
+func (m *SNoticeEnterGame) GetConfig() *SNoticeEnterGame_Config {
+	if m != nil {
+		return m.Config
+	}
+	return nil
+}
+
+func (m *SNoticeEnterGame) GetEntityID() int32 {
+	if m != nil {
+		return m.EntityID
+	}
+	return 0
+}
+
+func (m *SNoticeEnterGame) GetGameLeftSec() int32 {
+	if m != nil {
+		return m.GameLeftSec
+	}
+	return 0
+}
+
+func (m *SNoticeEnterGame) GetNickname() string {
+	if m != nil {
+		return m.Nickname
+	}
+	return ""
+}
+
+type SNoticeEnterGame_Config struct {
+	BulletLiveTime    int32   `protobuf:"varint,1,opt,name=bulletLiveTime" json:"bulletLiveTime,omitempty"`
+	RotationDelta     float32 `protobuf:"fixed32,2,opt,name=rotationDelta" json:"rotationDelta,omitempty"`
+	EntitySpeed       int32   `protobuf:"varint,3,opt,name=entitySpeed" json:"entitySpeed,omitempty"`
+	BulletSpeed       int32   `protobuf:"varint,4,opt,name=bulletSpeed" json:"bulletSpeed,omitempty"`
+	NoticePosDuration int32   `protobuf:"varint,5,opt,name=noticePosDuration" json:"noticePosDuration,omitempty"`
+	ProtectTime       int32   `protobuf:"varint,6,opt,name=protectTime" json:"protectTime,omitempty"`
+	EntityRadius      int32   `protobuf:"varint,7,opt,name=entityRadius" json:"entityRadius,omitempty"`
+	GameStartTime     int32   `protobuf:"varint,8,opt,name=gameStartTime" json:"gameStartTime,omitempty"`
+}
+
+func (m *SNoticeEnterGame_Config) Reset()                    { *m = SNoticeEnterGame_Config{} }
+func (m *SNoticeEnterGame_Config) String() string            { return proto.CompactTextString(m) }
+func (*SNoticeEnterGame_Config) ProtoMessage()               {}
+func (*SNoticeEnterGame_Config) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{4, 0} }
+
+func (m *SNoticeEnterGame_Config) GetBulletLiveTime() int32 {
+	if m != nil {
+		return m.BulletLiveTime
+	}
+	return 0
+}
+
+func (m *SNoticeEnterGame_Config) GetRotationDelta() float32 {
+	if m != nil {
+		return m.RotationDelta
+	}
+	return 0
+}
+
+func (m *SNoticeEnterGame_Config) GetEntitySpeed() int32 {
+	if m != nil {
+		return m.EntitySpeed
+	}
+	return 0
+}
+
+func (m *SNoticeEnterGame_Config) GetBulletSpeed() int32 {
+	if m != nil {
+		return m.BulletSpeed
+	}
+	return 0
+}
+
+func (m *SNoticeEnterGame_Config) GetNoticePosDuration() int32 {
+	if m != nil {
+		return m.NoticePosDuration
+	}
+	return 0
+}
+
+func (m *SNoticeEnterGame_Config) GetProtectTime() int32 {
+	if m != nil {
+		return m.ProtectTime
+	}
+	return 0
+}
+
+func (m *SNoticeEnterGame_Config) GetEntityRadius() int32 {
+	if m != nil {
+		return m.EntityRadius
+	}
+	return 0
+}
+
+func (m *SNoticeEnterGame_Config) GetGameStartTime() int32 {
+	if m != nil {
+		return m.GameStartTime
+	}
+	return 0
+}
+
+type Rank struct {
+	List []*Rank_Item `protobuf:"bytes,1,rep,name=list" json:"list,omitempty"`
+}
+
+func (m *Rank) Reset()                    { *m = Rank{} }
+func (m *Rank) String() string            { return proto.CompactTextString(m) }
+func (*Rank) ProtoMessage()               {}
+func (*Rank) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{5} }
+
+func (m *Rank) GetList() []*Rank_Item {
+	if m != nil {
+		return m.List
+	}
+	return nil
+}
+
+type Rank_Item struct {
+	EntityID  int32 `protobuf:"varint,1,opt,name=entityID" json:"entityID,omitempty"`
+	Score     int32 `protobuf:"varint,2,opt,name=score" json:"score,omitempty"`
+	Rank      int32 `protobuf:"varint,3,opt,name=rank" json:"rank,omitempty"`
+	KillCount int32 `protobuf:"varint,4,opt,name=killCount" json:"killCount,omitempty"`
+}
+
+func (m *Rank_Item) Reset()                    { *m = Rank_Item{} }
+func (m *Rank_Item) String() string            { return proto.CompactTextString(m) }
+func (*Rank_Item) ProtoMessage()               {}
+func (*Rank_Item) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{5, 0} }
+
+func (m *Rank_Item) GetEntityID() int32 {
+	if m != nil {
+		return m.EntityID
+	}
+	return 0
+}
+
+func (m *Rank_Item) GetScore() int32 {
+	if m != nil {
+		return m.Score
+	}
+	return 0
+}
+
+func (m *Rank_Item) GetRank() int32 {
+	if m != nil {
+		return m.Rank
+	}
+	return 0
+}
+
+func (m *Rank_Item) GetKillCount() int32 {
+	if m != nil {
+		return m.KillCount
+	}
+	return 0
+}
 
 type SNoticeGameOver struct {
 	OverReason  int32                   `protobuf:"varint,1,opt,name=overReason" json:"overReason,omitempty"`
 	Killer      *SNoticeGameOver_Killer `protobuf:"bytes,2,opt,name=killer" json:"killer,omitempty"`
 	GameLeftSec int32                   `protobuf:"varint,3,opt,name=gameLeftSec" json:"gameLeftSec,omitempty"`
+	Rank        *Rank                   `protobuf:"bytes,4,opt,name=rank" json:"rank,omitempty"`
 }
 
 func (m *SNoticeGameOver) Reset()                    { *m = SNoticeGameOver{} }
 func (m *SNoticeGameOver) String() string            { return proto.CompactTextString(m) }
 func (*SNoticeGameOver) ProtoMessage()               {}
-func (*SNoticeGameOver) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{5} }
+func (*SNoticeGameOver) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{6} }
 
 func (m *SNoticeGameOver) GetOverReason() int32 {
 	if m != nil {
@@ -159,6 +389,13 @@ func (m *SNoticeGameOver) GetGameLeftSec() int32 {
 	return 0
 }
 
+func (m *SNoticeGameOver) GetRank() *Rank {
+	if m != nil {
+		return m.Rank
+	}
+	return nil
+}
+
 type SNoticeGameOver_Killer struct {
 	AccountType int32  `protobuf:"varint,1,opt,name=accountType" json:"accountType,omitempty"`
 	Nickname    string `protobuf:"bytes,2,opt,name=nickname" json:"nickname,omitempty"`
@@ -169,7 +406,7 @@ type SNoticeGameOver_Killer struct {
 func (m *SNoticeGameOver_Killer) Reset()                    { *m = SNoticeGameOver_Killer{} }
 func (m *SNoticeGameOver_Killer) String() string            { return proto.CompactTextString(m) }
 func (*SNoticeGameOver_Killer) ProtoMessage()               {}
-func (*SNoticeGameOver_Killer) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{5, 0} }
+func (*SNoticeGameOver_Killer) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{6, 0} }
 
 func (m *SNoticeGameOver_Killer) GetAccountType() int32 {
 	if m != nil {
@@ -208,7 +445,7 @@ type ReqMove struct {
 func (m *ReqMove) Reset()                    { *m = ReqMove{} }
 func (m *ReqMove) String() string            { return proto.CompactTextString(m) }
 func (*ReqMove) ProtoMessage()               {}
-func (*ReqMove) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{6} }
+func (*ReqMove) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{7} }
 
 func (m *ReqMove) GetPressTime() float32 {
 	if m != nil {
@@ -237,7 +474,7 @@ type ReqShoot struct {
 func (m *ReqShoot) Reset()                    { *m = ReqShoot{} }
 func (m *ReqShoot) String() string            { return proto.CompactTextString(m) }
 func (*ReqShoot) ProtoMessage()               {}
-func (*ReqShoot) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{7} }
+func (*ReqShoot) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{8} }
 
 type ReqJump struct {
 }
@@ -245,93 +482,110 @@ type ReqJump struct {
 func (m *ReqJump) Reset()                    { *m = ReqJump{} }
 func (m *ReqJump) String() string            { return proto.CompactTextString(m) }
 func (*ReqJump) ProtoMessage()               {}
-func (*ReqJump) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{8} }
+func (*ReqJump) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{9} }
 
-// 断线重连，请求当前场景信息
+// 请求游戏断线重连
 type ReqGameScene struct {
-	Entitys     []*ReqGameScene_Entity `protobuf:"bytes,1,rep,name=entitys" json:"entitys,omitempty"`
-	GameLeftSec int32                  `protobuf:"varint,2,opt,name=gameLeftSec" json:"gameLeftSec,omitempty"`
 }
 
 func (m *ReqGameScene) Reset()                    { *m = ReqGameScene{} }
 func (m *ReqGameScene) String() string            { return proto.CompactTextString(m) }
 func (*ReqGameScene) ProtoMessage()               {}
-func (*ReqGameScene) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{9} }
+func (*ReqGameScene) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{10} }
 
-func (m *ReqGameScene) GetEntitys() []*ReqGameScene_Entity {
+// 断线重连，请求当前场景信息
+type RespGameScene struct {
+	Entitys     []*RespGameScene_Entity `protobuf:"bytes,1,rep,name=entitys" json:"entitys,omitempty"`
+	GameLeftSec int32                   `protobuf:"varint,2,opt,name=gameLeftSec" json:"gameLeftSec,omitempty"`
+	Err         RespGameScene_Error     `protobuf:"varint,3,opt,name=err,enum=cmsg.RespGameScene_Error" json:"err,omitempty"`
+}
+
+func (m *RespGameScene) Reset()                    { *m = RespGameScene{} }
+func (m *RespGameScene) String() string            { return proto.CompactTextString(m) }
+func (*RespGameScene) ProtoMessage()               {}
+func (*RespGameScene) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{11} }
+
+func (m *RespGameScene) GetEntitys() []*RespGameScene_Entity {
 	if m != nil {
 		return m.Entitys
 	}
 	return nil
 }
 
-func (m *ReqGameScene) GetGameLeftSec() int32 {
+func (m *RespGameScene) GetGameLeftSec() int32 {
 	if m != nil {
 		return m.GameLeftSec
 	}
 	return 0
 }
 
-type ReqGameScene_Entity struct {
+func (m *RespGameScene) GetErr() RespGameScene_Error {
+	if m != nil {
+		return m.Err
+	}
+	return RespGameScene_Invalid
+}
+
+type RespGameScene_Entity struct {
 	EntityID    int32  `protobuf:"varint,1,opt,name=entityID" json:"entityID,omitempty"`
 	AccountType int32  `protobuf:"varint,2,opt,name=accountType" json:"accountType,omitempty"`
-	Dead        bool   `protobuf:"varint,3,opt,name=dead" json:"dead,omitempty"`
+	Nickname    string `protobuf:"bytes,3,opt,name=nickname" json:"nickname,omitempty"`
 	HeadImgUrl  string `protobuf:"bytes,4,opt,name=headImgUrl" json:"headImgUrl,omitempty"`
 	Hp          int32  `protobuf:"varint,5,opt,name=hp" json:"hp,omitempty"`
 	Score       int32  `protobuf:"varint,6,opt,name=score" json:"score,omitempty"`
-	New         bool   `protobuf:"varint,7,opt,name=new" json:"new,omitempty"`
+	Protected   bool   `protobuf:"varint,7,opt,name=protected" json:"protected,omitempty"`
 }
 
-func (m *ReqGameScene_Entity) Reset()                    { *m = ReqGameScene_Entity{} }
-func (m *ReqGameScene_Entity) String() string            { return proto.CompactTextString(m) }
-func (*ReqGameScene_Entity) ProtoMessage()               {}
-func (*ReqGameScene_Entity) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{9, 0} }
+func (m *RespGameScene_Entity) Reset()                    { *m = RespGameScene_Entity{} }
+func (m *RespGameScene_Entity) String() string            { return proto.CompactTextString(m) }
+func (*RespGameScene_Entity) ProtoMessage()               {}
+func (*RespGameScene_Entity) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{11, 0} }
 
-func (m *ReqGameScene_Entity) GetEntityID() int32 {
+func (m *RespGameScene_Entity) GetEntityID() int32 {
 	if m != nil {
 		return m.EntityID
 	}
 	return 0
 }
 
-func (m *ReqGameScene_Entity) GetAccountType() int32 {
+func (m *RespGameScene_Entity) GetAccountType() int32 {
 	if m != nil {
 		return m.AccountType
 	}
 	return 0
 }
 
-func (m *ReqGameScene_Entity) GetDead() bool {
+func (m *RespGameScene_Entity) GetNickname() string {
 	if m != nil {
-		return m.Dead
+		return m.Nickname
 	}
-	return false
+	return ""
 }
 
-func (m *ReqGameScene_Entity) GetHeadImgUrl() string {
+func (m *RespGameScene_Entity) GetHeadImgUrl() string {
 	if m != nil {
 		return m.HeadImgUrl
 	}
 	return ""
 }
 
-func (m *ReqGameScene_Entity) GetHp() int32 {
+func (m *RespGameScene_Entity) GetHp() int32 {
 	if m != nil {
 		return m.Hp
 	}
 	return 0
 }
 
-func (m *ReqGameScene_Entity) GetScore() int32 {
+func (m *RespGameScene_Entity) GetScore() int32 {
 	if m != nil {
 		return m.Score
 	}
 	return 0
 }
 
-func (m *ReqGameScene_Entity) GetNew() bool {
+func (m *RespGameScene_Entity) GetProtected() bool {
 	if m != nil {
-		return m.New
+		return m.Protected
 	}
 	return false
 }
@@ -348,7 +602,7 @@ type SNoticeShoot struct {
 func (m *SNoticeShoot) Reset()                    { *m = SNoticeShoot{} }
 func (m *SNoticeShoot) String() string            { return proto.CompactTextString(m) }
 func (*SNoticeShoot) ProtoMessage()               {}
-func (*SNoticeShoot) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{10} }
+func (*SNoticeShoot) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{12} }
 
 func (m *SNoticeShoot) GetX() float32 {
 	if m != nil {
@@ -394,7 +648,7 @@ type SNoticeWorldChange struct {
 func (m *SNoticeWorldChange) Reset()                    { *m = SNoticeWorldChange{} }
 func (m *SNoticeWorldChange) String() string            { return proto.CompactTextString(m) }
 func (*SNoticeWorldChange) ProtoMessage()               {}
-func (*SNoticeWorldChange) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{11} }
+func (*SNoticeWorldChange) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{13} }
 
 func (m *SNoticeWorldChange) GetDeleteBullets() []int32 {
 	if m != nil {
@@ -427,7 +681,7 @@ type SNoticeWorldChange_Entity struct {
 func (m *SNoticeWorldChange_Entity) Reset()                    { *m = SNoticeWorldChange_Entity{} }
 func (m *SNoticeWorldChange_Entity) String() string            { return proto.CompactTextString(m) }
 func (*SNoticeWorldChange_Entity) ProtoMessage()               {}
-func (*SNoticeWorldChange_Entity) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{11, 0} }
+func (*SNoticeWorldChange_Entity) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{13, 0} }
 
 func (m *SNoticeWorldChange_Entity) GetId() int32 {
 	if m != nil {
@@ -464,7 +718,7 @@ type SNoticeWorldPos struct {
 func (m *SNoticeWorldPos) Reset()                    { *m = SNoticeWorldPos{} }
 func (m *SNoticeWorldPos) String() string            { return proto.CompactTextString(m) }
 func (*SNoticeWorldPos) ProtoMessage()               {}
-func (*SNoticeWorldPos) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{12} }
+func (*SNoticeWorldPos) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{14} }
 
 func (m *SNoticeWorldPos) GetEntitys() []*SNoticeWorldPos_Entity {
 	if m != nil {
@@ -474,16 +728,16 @@ func (m *SNoticeWorldPos) GetEntitys() []*SNoticeWorldPos_Entity {
 }
 
 type SNoticeWorldPos_Entity struct {
-	Id       int32 `protobuf:"varint,1,opt,name=id" json:"id,omitempty"`
-	X        int32 `protobuf:"varint,2,opt,name=x" json:"x,omitempty"`
-	Y        int32 `protobuf:"varint,3,opt,name=y" json:"y,omitempty"`
-	Rotation int32 `protobuf:"varint,4,opt,name=rotation" json:"rotation,omitempty"`
+	Id       int32   `protobuf:"varint,1,opt,name=id" json:"id,omitempty"`
+	X        float32 `protobuf:"fixed32,2,opt,name=x" json:"x,omitempty"`
+	Y        float32 `protobuf:"fixed32,3,opt,name=y" json:"y,omitempty"`
+	Rotation float32 `protobuf:"fixed32,4,opt,name=rotation" json:"rotation,omitempty"`
 }
 
 func (m *SNoticeWorldPos_Entity) Reset()                    { *m = SNoticeWorldPos_Entity{} }
 func (m *SNoticeWorldPos_Entity) String() string            { return proto.CompactTextString(m) }
 func (*SNoticeWorldPos_Entity) ProtoMessage()               {}
-func (*SNoticeWorldPos_Entity) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{12, 0} }
+func (*SNoticeWorldPos_Entity) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{14, 0} }
 
 func (m *SNoticeWorldPos_Entity) GetId() int32 {
 	if m != nil {
@@ -492,94 +746,128 @@ func (m *SNoticeWorldPos_Entity) GetId() int32 {
 	return 0
 }
 
-func (m *SNoticeWorldPos_Entity) GetX() int32 {
+func (m *SNoticeWorldPos_Entity) GetX() float32 {
 	if m != nil {
 		return m.X
 	}
 	return 0
 }
 
-func (m *SNoticeWorldPos_Entity) GetY() int32 {
+func (m *SNoticeWorldPos_Entity) GetY() float32 {
 	if m != nil {
 		return m.Y
 	}
 	return 0
 }
 
-func (m *SNoticeWorldPos_Entity) GetRotation() int32 {
+func (m *SNoticeWorldPos_Entity) GetRotation() float32 {
 	if m != nil {
 		return m.Rotation
 	}
 	return 0
 }
 
+type SNoticeGameReconnect struct {
+}
+
+func (m *SNoticeGameReconnect) Reset()                    { *m = SNoticeGameReconnect{} }
+func (m *SNoticeGameReconnect) String() string            { return proto.CompactTextString(m) }
+func (*SNoticeGameReconnect) ProtoMessage()               {}
+func (*SNoticeGameReconnect) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{15} }
+
 func init() {
-	proto.RegisterType((*ReqHello)(nil), "cmsg.ReqHello")
-	proto.RegisterType((*RespHello)(nil), "cmsg.RespHello")
 	proto.RegisterType((*ReqLogin)(nil), "cmsg.ReqLogin")
+	proto.RegisterType((*RespLogin)(nil), "cmsg.RespLogin")
 	proto.RegisterType((*ReqJoinGame)(nil), "cmsg.ReqJoinGame")
 	proto.RegisterType((*RespJoinGame)(nil), "cmsg.RespJoinGame")
+	proto.RegisterType((*SNoticeEnterGame)(nil), "cmsg.SNoticeEnterGame")
+	proto.RegisterType((*SNoticeEnterGame_Config)(nil), "cmsg.SNoticeEnterGame.Config")
+	proto.RegisterType((*Rank)(nil), "cmsg.Rank")
+	proto.RegisterType((*Rank_Item)(nil), "cmsg.Rank.Item")
 	proto.RegisterType((*SNoticeGameOver)(nil), "cmsg.SNoticeGameOver")
 	proto.RegisterType((*SNoticeGameOver_Killer)(nil), "cmsg.SNoticeGameOver.Killer")
 	proto.RegisterType((*ReqMove)(nil), "cmsg.ReqMove")
 	proto.RegisterType((*ReqShoot)(nil), "cmsg.ReqShoot")
 	proto.RegisterType((*ReqJump)(nil), "cmsg.ReqJump")
 	proto.RegisterType((*ReqGameScene)(nil), "cmsg.ReqGameScene")
-	proto.RegisterType((*ReqGameScene_Entity)(nil), "cmsg.ReqGameScene.Entity")
+	proto.RegisterType((*RespGameScene)(nil), "cmsg.RespGameScene")
+	proto.RegisterType((*RespGameScene_Entity)(nil), "cmsg.RespGameScene.Entity")
 	proto.RegisterType((*SNoticeShoot)(nil), "cmsg.SNoticeShoot")
 	proto.RegisterType((*SNoticeWorldChange)(nil), "cmsg.SNoticeWorldChange")
 	proto.RegisterType((*SNoticeWorldChange_Entity)(nil), "cmsg.SNoticeWorldChange.Entity")
 	proto.RegisterType((*SNoticeWorldPos)(nil), "cmsg.SNoticeWorldPos")
 	proto.RegisterType((*SNoticeWorldPos_Entity)(nil), "cmsg.SNoticeWorldPos.Entity")
-	proto.RegisterEnum("cmsg.ReqLogin_LoginType", ReqLogin_LoginType_name, ReqLogin_LoginType_value)
+	proto.RegisterType((*SNoticeGameReconnect)(nil), "cmsg.SNoticeGameReconnect")
+	proto.RegisterEnum("cmsg.RespLogin_Error", RespLogin_Error_name, RespLogin_Error_value)
+	proto.RegisterEnum("cmsg.RespJoinGame_Error", RespJoinGame_Error_name, RespJoinGame_Error_value)
+	proto.RegisterEnum("cmsg.RespGameScene_Error", RespGameScene_Error_name, RespGameScene_Error_value)
 }
 
 func init() { proto.RegisterFile("msg/cmsg/cmsg.proto", fileDescriptor0) }
 
 var fileDescriptor0 = []byte{
-	// 697 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x74, 0x54, 0xcd, 0x6e, 0xd3, 0x4a,
-	0x14, 0xbe, 0x9e, 0xfc, 0x35, 0x27, 0x6d, 0x6e, 0x34, 0xf7, 0x2e, 0x4c, 0x14, 0x41, 0x64, 0x21,
-	0xd4, 0x55, 0x10, 0x2d, 0xea, 0x03, 0xd0, 0x54, 0x25, 0x6d, 0x81, 0x6a, 0xd2, 0x52, 0x16, 0x6c,
-	0x5c, 0xfb, 0x90, 0x58, 0xb5, 0x3d, 0xce, 0x78, 0x12, 0xda, 0x25, 0x2b, 0x78, 0x06, 0x78, 0x00,
-	0xf6, 0x3c, 0x21, 0x9a, 0xf1, 0xd8, 0x71, 0x1c, 0x75, 0x63, 0xcd, 0xf7, 0xcd, 0x99, 0x33, 0xe7,
-	0x7c, 0xdf, 0x19, 0xc3, 0x7f, 0x51, 0x3a, 0x7b, 0xe9, 0xe5, 0x9f, 0x51, 0x22, 0xb8, 0xe4, 0xb4,
-	0xae, 0xd6, 0x0e, 0xc0, 0x0e, 0xc3, 0xc5, 0x5b, 0x0c, 0x43, 0xee, 0x74, 0xa0, 0xcd, 0x30, 0x4d,
-	0x32, 0xf0, 0xdb, 0xd2, 0x3b, 0x17, 0x7c, 0x16, 0xc4, 0xf4, 0x08, 0xda, 0xa1, 0x5a, 0x5c, 0x3d,
-	0x24, 0x68, 0x5b, 0x43, 0x6b, 0xbf, 0x7b, 0x60, 0x8f, 0x74, 0xae, 0x3c, 0x64, 0x74, 0x91, 0xef,
-	0xb3, 0x75, 0x28, 0xfd, 0x1f, 0x1a, 0x92, 0xdf, 0x61, 0x6c, 0x93, 0xa1, 0xb5, 0xdf, 0x66, 0x19,
-	0xa0, 0x7d, 0xd8, 0x89, 0x03, 0xef, 0x2e, 0x76, 0x23, 0xb4, 0x6b, 0x7a, 0xa3, 0xc0, 0xce, 0x2b,
-	0x68, 0x17, 0x99, 0x68, 0x07, 0x5a, 0x93, 0x78, 0xe5, 0x86, 0x81, 0xdf, 0xfb, 0x47, 0x81, 0x8f,
-	0x41, 0x1a, 0x48, 0x2e, 0x7a, 0x16, 0x05, 0x68, 0xde, 0x7c, 0x3a, 0x75, 0x23, 0xec, 0x11, 0x67,
-	0x0f, 0x3a, 0x0c, 0x17, 0x67, 0x3c, 0x88, 0x15, 0xe1, 0x74, 0x61, 0x57, 0x75, 0x51, 0xe0, 0x6f,
-	0x04, 0xfe, 0x9d, 0xbe, 0xe7, 0x32, 0xf0, 0x50, 0xe1, 0x0f, 0x2b, 0x14, 0xf4, 0x29, 0x00, 0x5f,
-	0xa1, 0x60, 0xe8, 0xa6, 0x3c, 0xd6, 0x0d, 0x35, 0x58, 0x89, 0xa1, 0xaf, 0xa1, 0x79, 0x17, 0x84,
-	0x21, 0x0a, 0x5d, 0x78, 0xe7, 0x60, 0x90, 0x35, 0x5b, 0x49, 0x33, 0x3a, 0xd7, 0x31, 0xcc, 0xc4,
-	0xd2, 0x21, 0x74, 0x66, 0x6e, 0x84, 0x17, 0xf8, 0x45, 0x4e, 0xd1, 0xd3, 0xad, 0x35, 0x58, 0x99,
-	0xea, 0xaf, 0xa0, 0x79, 0x5e, 0xc4, 0xba, 0x9e, 0xc7, 0x97, 0xb1, 0x2c, 0x34, 0x6d, 0xb0, 0x32,
-	0xb5, 0xa1, 0x12, 0xd9, 0x54, 0x49, 0xd5, 0x3f, 0x47, 0xd7, 0x9f, 0x44, 0xb3, 0x6b, 0x11, 0x1a,
-	0x0d, 0x4b, 0x0c, 0xed, 0x02, 0x99, 0x27, 0x76, 0x5d, 0x27, 0x25, 0xf3, 0xc4, 0xe1, 0xd0, 0x62,
-	0xb8, 0x78, 0xc7, 0x57, 0x48, 0x07, 0xd0, 0x4e, 0x04, 0xa6, 0xe9, 0x55, 0x10, 0x65, 0xd7, 0x12,
-	0xb6, 0x26, 0xe8, 0x0b, 0xe8, 0x4a, 0x57, 0xcc, 0x50, 0x32, 0x2e, 0x5d, 0x19, 0xf0, 0xcc, 0x39,
-	0xc2, 0x2a, 0xac, 0x2a, 0x20, 0x88, 0x93, 0xa5, 0x9c, 0xe2, 0x62, 0x32, 0x36, 0x9d, 0x96, 0x18,
-	0x33, 0x56, 0xd3, 0x39, 0xe7, 0xd2, 0x69, 0xeb, 0xcb, 0xcf, 0x96, 0x51, 0xe2, 0xfc, 0x24, 0xca,
-	0x9c, 0x85, 0x12, 0x70, 0xea, 0x61, 0x8c, 0xf4, 0x10, 0x5a, 0x18, 0xcb, 0x40, 0x3e, 0xa4, 0xb6,
-	0x35, 0xac, 0xed, 0x77, 0x0e, 0x9e, 0x14, 0x63, 0x55, 0x04, 0x8d, 0x4e, 0x74, 0x04, 0xcb, 0x23,
-	0xab, 0x3a, 0x93, 0x6d, 0x9d, 0xff, 0x58, 0xd0, 0xcc, 0x4e, 0x29, 0x19, 0xb3, 0x73, 0x93, 0xb1,
-	0x51, 0xb9, 0xc0, 0x55, 0x13, 0xc8, 0xb6, 0x09, 0x14, 0xea, 0x3e, 0xba, 0xbe, 0xee, 0x70, 0x87,
-	0xe9, 0x75, 0x45, 0xfc, 0xfa, 0x23, 0xe2, 0x37, 0x72, 0xf1, 0xd5, 0x23, 0x48, 0x3d, 0x2e, 0xd0,
-	0x6e, 0x6a, 0x2a, 0x03, 0xb4, 0x07, 0xb5, 0x18, 0xbf, 0xda, 0x2d, 0x9d, 0x58, 0x2d, 0x9d, 0x1f,
-	0x16, 0xec, 0x9a, 0x09, 0xd3, 0xc2, 0xd1, 0x5d, 0xb0, 0xee, 0x8d, 0x45, 0xd6, 0xbd, 0x42, 0x0f,
-	0xc6, 0x0d, 0x4b, 0xb7, 0x25, 0x72, 0x8b, 0x6a, 0x9a, 0x2c, 0xb0, 0xda, 0xbb, 0x5d, 0x86, 0x21,
-	0xca, 0xc9, 0xd8, 0xcc, 0x40, 0x81, 0xe9, 0x73, 0xd8, 0xf3, 0x04, 0xba, 0x92, 0x8b, 0xeb, 0x14,
-	0xc5, 0x64, 0xac, 0xeb, 0xac, 0xb3, 0x4d, 0xd2, 0xf9, 0x4e, 0x80, 0x9a, 0x52, 0x6e, 0xb8, 0x08,
-	0xfd, 0xe3, 0xb9, 0x1b, 0xcf, 0x50, 0x1d, 0xf6, 0x31, 0x44, 0x89, 0x6f, 0x74, 0xba, 0xcc, 0xb3,
-	0x06, 0xdb, 0x24, 0xd7, 0x51, 0x27, 0xc6, 0x59, 0x52, 0x8e, 0x32, 0x24, 0x3d, 0x85, 0xae, 0xa7,
-	0xb3, 0xfa, 0x79, 0x58, 0x4d, 0x0f, 0xc0, 0xb3, 0x8d, 0xa7, 0x56, 0xba, 0x3d, 0x1f, 0x83, 0xca,
-	0xb1, 0xfe, 0xe7, 0xc2, 0xea, 0x2e, 0x90, 0xc0, 0x37, 0x26, 0x93, 0xc0, 0x37, 0x46, 0x90, 0x6d,
-	0x23, 0x6a, 0x65, 0x23, 0x06, 0xd0, 0x56, 0xef, 0xf7, 0x58, 0x79, 0x6e, 0xe4, 0x5a, 0x13, 0xce,
-	0x2f, 0xab, 0xf8, 0x7b, 0xe8, 0x5a, 0x2e, 0x79, 0x4a, 0x8f, 0xaa, 0x43, 0x3b, 0xd8, 0xae, 0xf9,
-	0x92, 0xa7, 0xd5, 0xb9, 0xed, 0x5f, 0x3e, 0x5a, 0xa9, 0x76, 0x3a, 0x2b, 0x34, 0x77, 0x3a, 0xab,
-	0xb1, 0xe2, 0xb4, 0x71, 0x33, 0xc7, 0xb7, 0x4d, 0xfd, 0x2b, 0x3f, 0xfc, 0x1b, 0x00, 0x00, 0xff,
-	0xff, 0x59, 0x13, 0x83, 0xa1, 0xe1, 0x05, 0x00, 0x00,
+	// 1006 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x7c, 0x56, 0xcd, 0x72, 0x1b, 0x45,
+	0x17, 0xfd, 0xe6, 0x4f, 0x96, 0xaf, 0x64, 0x45, 0xe9, 0xcf, 0xa4, 0x84, 0xca, 0x04, 0xd5, 0x40,
+	0x05, 0xf3, 0x53, 0xa2, 0xca, 0x04, 0x36, 0xac, 0xc0, 0x52, 0xa5, 0x94, 0x98, 0xa0, 0x6a, 0xc5,
+	0xc5, 0x86, 0xcd, 0x64, 0xe6, 0x46, 0x1a, 0x34, 0xea, 0x96, 0x7a, 0x5a, 0xc2, 0x7e, 0x00, 0x7e,
+	0xde, 0x80, 0x05, 0x2b, 0xde, 0x81, 0x67, 0xe0, 0x21, 0x78, 0x1a, 0xaa, 0x7b, 0x7a, 0x46, 0x33,
+	0x23, 0xc7, 0x1b, 0x97, 0xfa, 0xf4, 0xd1, 0xed, 0xd3, 0xf7, 0x9e, 0x3e, 0x32, 0xfc, 0x7f, 0x95,
+	0xce, 0x3f, 0x0f, 0xf3, 0x3f, 0xc3, 0xb5, 0xe0, 0x92, 0x13, 0x57, 0x7d, 0xf6, 0x07, 0xd0, 0xa4,
+	0xb8, 0xb9, 0xe2, 0xf3, 0x98, 0x91, 0x53, 0xf0, 0x24, 0x5f, 0x22, 0xeb, 0x59, 0x03, 0xeb, 0xfc,
+	0x98, 0x66, 0x0b, 0xff, 0x57, 0x0b, 0x8e, 0x29, 0xa6, 0xeb, 0x8c, 0xf3, 0x11, 0x38, 0x28, 0x84,
+	0x66, 0x74, 0x2e, 0xde, 0x19, 0xea, 0x7a, 0xc5, 0xee, 0x70, 0x2c, 0x04, 0x17, 0x54, 0x31, 0xc8,
+	0x23, 0x68, 0x6c, 0x53, 0x14, 0x93, 0x51, 0xcf, 0x1e, 0x58, 0xe7, 0x2e, 0x35, 0xab, 0xfd, 0x21,
+	0x4e, 0xf9, 0x10, 0x1f, 0x3c, 0xfd, 0x5d, 0xd2, 0x82, 0xa3, 0x09, 0xdb, 0x05, 0x49, 0x1c, 0x75,
+	0xff, 0x47, 0xda, 0xd0, 0xa4, 0xd3, 0x4b, 0xbd, 0xd1, 0xb5, 0xfc, 0x8f, 0xa1, 0x45, 0x71, 0xf3,
+	0x9c, 0xc7, 0xec, 0x59, 0xb0, 0x42, 0xd2, 0x87, 0x26, 0x8b, 0xc3, 0x25, 0x0b, 0x56, 0x68, 0x04,
+	0x17, 0x6b, 0xff, 0x67, 0x68, 0x2b, 0x51, 0x05, 0xf7, 0x93, 0xb2, 0xea, 0xde, 0x5e, 0x75, 0x4e,
+	0x28, 0x09, 0xf7, 0xbf, 0xbe, 0x53, 0x0a, 0x81, 0xce, 0x75, 0x8a, 0xe2, 0x25, 0x97, 0xe3, 0x9b,
+	0x38, 0x95, 0x18, 0x75, 0x2d, 0xf2, 0x10, 0x4e, 0xbe, 0x49, 0x04, 0x06, 0xd1, 0xed, 0x44, 0x57,
+	0xe9, 0xda, 0xfe, 0xbf, 0x0e, 0x74, 0x67, 0x2f, 0xb9, 0x8c, 0x43, 0x1c, 0x33, 0x89, 0x42, 0x9f,
+	0xfe, 0x25, 0x34, 0x42, 0xce, 0xde, 0xc4, 0x73, 0xdd, 0x8a, 0xd6, 0xc5, 0x7b, 0x99, 0x80, 0x3a,
+	0x6f, 0x78, 0xa9, 0x49, 0xd4, 0x90, 0xd5, 0x05, 0x91, 0xc9, 0x58, 0xde, 0x4e, 0x46, 0xba, 0x59,
+	0x1e, 0x2d, 0xd6, 0x64, 0x00, 0xad, 0x79, 0xb0, 0xc2, 0x2b, 0x7c, 0x23, 0x67, 0x18, 0xf6, 0x5c,
+	0xbd, 0x5d, 0x86, 0x2a, 0xed, 0xf1, 0xaa, 0xed, 0xe9, 0xff, 0x6d, 0x43, 0x23, 0x3b, 0x8c, 0x3c,
+	0x81, 0xce, 0xeb, 0x6d, 0x92, 0xa0, 0xbc, 0x8a, 0x77, 0xf8, 0x2a, 0x36, 0xbd, 0xf4, 0x68, 0x0d,
+	0x25, 0x1f, 0xc2, 0x89, 0xe0, 0x32, 0x90, 0x31, 0x67, 0x23, 0x4c, 0x64, 0xa0, 0xaf, 0x62, 0xd3,
+	0x2a, 0xa8, 0x64, 0x65, 0x12, 0x67, 0x6b, 0xc4, 0xc8, 0xa8, 0x2e, 0x43, 0x8a, 0x91, 0x55, 0xce,
+	0x18, 0x46, 0x78, 0x09, 0x22, 0x9f, 0xc1, 0x43, 0xa6, 0x1b, 0x33, 0xe5, 0xe9, 0x68, 0x2b, 0x74,
+	0x75, 0x7d, 0x03, 0x8f, 0x1e, 0x6e, 0xa8, 0x7a, 0xca, 0xce, 0x18, 0x4a, 0x2d, 0xbe, 0x91, 0xd5,
+	0x2b, 0x41, 0xc4, 0x87, 0x76, 0x26, 0x80, 0x06, 0x51, 0xbc, 0x4d, 0x7b, 0x47, 0x9a, 0x52, 0xc1,
+	0xd4, 0xed, 0x54, 0xef, 0x66, 0x32, 0x10, 0x59, 0x9d, 0xa6, 0x26, 0x55, 0x41, 0xff, 0x0f, 0x0b,
+	0x5c, 0x1a, 0xb0, 0x25, 0xf9, 0x00, 0xdc, 0x24, 0x4e, 0x65, 0xcf, 0x1a, 0x38, 0xe7, 0xad, 0x8b,
+	0x07, 0xc6, 0x4f, 0x01, 0x5b, 0x0e, 0x27, 0x12, 0x57, 0x54, 0x6f, 0xf6, 0x7f, 0x02, 0x57, 0xad,
+	0x2a, 0x63, 0xb4, 0x6a, 0x63, 0x3c, 0x05, 0x2f, 0x0d, 0xb9, 0x40, 0xdd, 0x4d, 0x8f, 0x66, 0x0b,
+	0x42, 0xc0, 0x15, 0x01, 0x5b, 0x9a, 0xf6, 0xe9, 0xcf, 0xe4, 0x0c, 0x8e, 0x97, 0x71, 0x92, 0x5c,
+	0xf2, 0x2d, 0x93, 0xa6, 0x6b, 0x7b, 0xc0, 0xff, 0xcb, 0x86, 0x07, 0xc6, 0x4e, 0xca, 0x49, 0xdf,
+	0xef, 0x50, 0x90, 0xc7, 0x00, 0x7c, 0x87, 0x82, 0x62, 0x90, 0x72, 0x66, 0x4e, 0x2e, 0x21, 0xe4,
+	0x29, 0x34, 0x54, 0x01, 0x14, 0xc6, 0x95, 0x67, 0x15, 0x57, 0xe6, 0x65, 0x86, 0x2f, 0x34, 0x87,
+	0x1a, 0x6e, 0xdd, 0x78, 0xce, 0xa1, 0xf1, 0x1e, 0x1b, 0xf5, 0xae, 0xae, 0x0a, 0xfb, 0xe6, 0x64,
+	0x37, 0xe9, 0xef, 0xa0, 0xf1, 0xa2, 0xa8, 0x15, 0x84, 0xa1, 0xba, 0xc0, 0xab, 0xdb, 0x75, 0x6e,
+	0xbc, 0x32, 0x54, 0x31, 0xb1, 0x5d, 0x35, 0xb1, 0xba, 0xdf, 0x02, 0x83, 0x68, 0xb2, 0x9a, 0x5f,
+	0x8b, 0xc4, 0xa4, 0x49, 0x09, 0x21, 0x1d, 0xb0, 0x17, 0x6b, 0xd3, 0x2a, 0x7b, 0xb1, 0xf6, 0x39,
+	0x1c, 0x51, 0xdc, 0x7c, 0xc7, 0x77, 0xa8, 0x9a, 0xb9, 0x16, 0x98, 0xa6, 0x85, 0xdf, 0x6d, 0xba,
+	0x07, 0xd4, 0x93, 0x90, 0x81, 0x98, 0xa3, 0xa4, 0xc6, 0xdb, 0xc6, 0xeb, 0x35, 0x54, 0x09, 0x88,
+	0xd9, 0x7a, 0x2b, 0x67, 0xb8, 0x29, 0x5e, 0x68, 0x09, 0xf1, 0x41, 0x47, 0xeb, 0x6c, 0xc1, 0xb9,
+	0xf4, 0x8f, 0xf5, 0xe1, 0xcf, 0xb7, 0xab, 0xb5, 0xdf, 0x51, 0xd9, 0xb4, 0x51, 0xfd, 0x9d, 0x85,
+	0xc8, 0xd0, 0xff, 0xc5, 0x81, 0x13, 0x95, 0x45, 0x05, 0x42, 0x9e, 0xc2, 0x51, 0xe6, 0x90, 0xd4,
+	0x38, 0xac, 0xbf, 0x4f, 0xac, 0x82, 0x35, 0x1c, 0x67, 0x06, 0xce, 0xa9, 0xf5, 0xc9, 0xd8, 0x87,
+	0x93, 0xf9, 0x34, 0x4b, 0x41, 0x47, 0xa7, 0xe0, 0xbb, 0x77, 0xd6, 0x2c, 0x62, 0xb0, 0xff, 0x8f,
+	0x05, 0x8d, 0xec, 0x88, 0x7b, 0x1d, 0x5c, 0x9b, 0xa1, 0x7d, 0xff, 0x0c, 0x9d, 0x7b, 0x67, 0xe8,
+	0xbe, 0x65, 0x86, 0x5e, 0x3e, 0xc3, 0xfd, 0x7b, 0x69, 0x94, 0xdf, 0x8b, 0x1e, 0xa7, 0x7e, 0xf0,
+	0x18, 0xe9, 0xe7, 0xdd, 0xa4, 0x7b, 0xc0, 0x7f, 0x72, 0x67, 0x9e, 0x77, 0xa1, 0xad, 0xae, 0x9d,
+	0xe7, 0x79, 0xd7, 0xf2, 0x7f, 0xb7, 0xa0, 0x6d, 0xcc, 0xaf, 0x67, 0x46, 0xda, 0x60, 0xdd, 0x18,
+	0x77, 0x58, 0x37, 0x6a, 0x75, 0x6b, 0x8c, 0x60, 0xe9, 0x96, 0xe4, 0xc9, 0xa7, 0x2f, 0x65, 0xd3,
+	0x62, 0xad, 0xf6, 0xb2, 0x3c, 0x9b, 0x8c, 0x8c, 0xfd, 0x8a, 0xb5, 0x0a, 0x9a, 0x50, 0x60, 0x20,
+	0xb9, 0xb8, 0xce, 0x7e, 0x1c, 0x3d, 0xfd, 0xe3, 0x58, 0x05, 0xfd, 0xdf, 0x6c, 0x20, 0x46, 0xca,
+	0x0f, 0x5c, 0x24, 0xd1, 0xe5, 0x22, 0x60, 0x73, 0x9d, 0xc1, 0x11, 0x26, 0x28, 0xf1, 0x5b, 0x5d,
+	0x2e, 0x73, 0x87, 0x47, 0xab, 0xe0, 0x9e, 0x35, 0x36, 0x1e, 0xb2, 0xcb, 0x2c, 0x03, 0x92, 0x67,
+	0xd0, 0x09, 0x75, 0xd5, 0x28, 0xa7, 0x39, 0xda, 0x6a, 0xef, 0x57, 0x52, 0xa0, 0x74, 0x7a, 0xee,
+	0xb7, 0xda, 0xd7, 0xfa, 0x3f, 0x16, 0x36, 0xe9, 0x80, 0x1d, 0x47, 0xc6, 0x20, 0x76, 0x1c, 0x99,
+	0xe1, 0xd9, 0x87, 0xc3, 0x73, 0x6a, 0xc3, 0xbb, 0x27, 0xd8, 0xfe, 0xb4, 0x8a, 0x60, 0xd3, 0x5a,
+	0xa6, 0x3c, 0x25, 0x5f, 0xd5, 0x9f, 0xc7, 0xd9, 0xa1, 0xe6, 0x29, 0x4f, 0xeb, 0x0f, 0xa4, 0x3f,
+	0x7d, 0xab, 0x52, 0x3d, 0x69, 0xbb, 0x32, 0x69, 0xe7, 0xae, 0x49, 0xbb, 0xd5, 0x49, 0xfb, 0x8f,
+	0xe0, 0xb4, 0x14, 0x97, 0x14, 0x43, 0xce, 0x18, 0x86, 0xf2, 0x75, 0x43, 0xff, 0x87, 0xf5, 0xc5,
+	0x7f, 0x01, 0x00, 0x00, 0xff, 0xff, 0x5c, 0x92, 0xc3, 0xc1, 0x78, 0x09, 0x00, 0x00,
 }

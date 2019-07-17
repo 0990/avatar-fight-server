@@ -1,34 +1,59 @@
 syntax="proto3";
 package cmsg;
-
-message ReqHello{
-
-}
-
-message RespHello{
-
-}
-
 message ReqLogin{
-    enum LoginType{
+    string token = 1;
+}
+
+message RespLogin{
+    enum Error{
         Invalid = 0;
-        Visitor = 1;
-        WXGame = 2;
+        RPCError = 1;
     }
-    LoginType loginType = 1;
-    string token = 2;
-    string nickname = 3;
+    Error err = 1;
+    uint64 userID = 2;
+    string token = 3;
 }
 
 message ReqJoinGame{
-
+    string nickname =1;
 }
 
 message RespJoinGame{
-
+    enum Error{
+        Invalid = 0;
+        UserNotExisted =1;
+        AlreadyInGame = 2;
+    }
+    Error err = 1;
 }
 
+message SNoticeEnterGame{
+    message Config{
+        int32 bulletLiveTime = 1;
+        float rotationDelta = 2;
+        int32 entitySpeed = 3;
+        int32 bulletSpeed = 4;
+        int32 noticePosDuration = 5;
+        int32 protectTime = 6;
+        int32 entityRadius = 7;
+        int32 gameStartTime = 8;
+    }
 
+    Config config = 2;
+    int32 entityID = 3;
+    int32 gameLeftSec = 4;
+    string nickname = 5;
+}
+
+message Rank{
+    message Item{
+        int32 entityID = 1;
+        int32 score = 2;
+        int32 rank = 3;
+        int32 killCount = 4;
+    }
+    repeated Item list = 1;
+}
 
 message SNoticeGameOver{
     message Killer{
@@ -37,9 +62,11 @@ message SNoticeGameOver{
         string headImgUrl = 3;
         int32 hp = 4;
     }
+
     int32 overReason = 1;
     Killer killer = 2;
     int32 gameLeftSec = 3;
+    Rank rank = 4;
 }
 
 message ReqMove{
@@ -56,19 +83,30 @@ message ReqJump{
 
 }
 
-//断线重连，请求当前场景信息
+//请求游戏断线重连
 message ReqGameScene{
+
+}
+
+//断线重连，请求当前场景信息
+message RespGameScene{
+    enum Error{
+        Invalid = 0;
+        GameNotExist = 1;
+    }
+
     message Entity{
         int32 entityID = 1;
         int32 accountType = 2;
-        bool dead = 3;
+        string nickname = 3;
         string headImgUrl = 4;
         int32 hp = 5;
         int32 score = 6;
-        bool new = 7;
+        bool protected = 7;
     }
     repeated Entity entitys = 1;
     int32 gameLeftSec = 2;
+    Error err = 3;
 }
 
 //子弹发送
@@ -96,9 +134,15 @@ message SNoticeWorldChange{
 message SNoticeWorldPos{
     message Entity{
         int32 id = 1;
-        int32 x = 2;
-        int32 y = 3;
-        int32 rotation = 4;
+        float x = 2;
+        float y = 3;
+        float rotation = 4;
     }
     repeated Entity entitys = 1;
 }
+
+
+message SNoticeGameReconnect{
+}
+
+

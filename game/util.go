@@ -2,16 +2,16 @@ package game
 
 import "math"
 
-func NewRotation(lastRotation, pressTime, targetRotation float64) float64 {
-	delta := math.Abs(targetRotation - lastRotation)
+func NewRotation(lastRotation, pressTime, targetRotation float32) float32 {
+	delta := math.Abs(float64(targetRotation - lastRotation))
 	if delta >= 180 {
 		delta = math.Abs(360 - delta)
 	}
-	var newRotation float64
-	if delta <= pressTime*ROTATION_DELTA {
+	var newRotation float32
+	if delta <= float64(pressTime*ROTATION_DELTA) {
 		newRotation = targetRotation
 	} else {
-		var change float64
+		var change float32
 		if lastRotation >= 0 {
 			if lastRotation-180 < targetRotation && targetRotation < lastRotation {
 				change = -pressTime * ROTATION_DELTA
@@ -37,8 +37,8 @@ func NewRotation(lastRotation, pressTime, targetRotation float64) float64 {
 	return newRotation
 }
 
-func NewXPos(lastPos, lastRotation, pressTime float64) float64 {
-	newXPos := lastPos + pressTime*ENTITY_SPEED*math.Cos(lastRotation*math.Pi/180)
+func NewXPos(lastPos, lastRotation, pressTime float32) float32 {
+	newXPos := lastPos + pressTime*ENTITY_SPEED*float32(math.Cos(float64(lastRotation*math.Pi/180)))
 	if newXPos < ENTITY_RADIUS {
 		newXPos = ENTITY_RADIUS
 	}
@@ -48,8 +48,8 @@ func NewXPos(lastPos, lastRotation, pressTime float64) float64 {
 	return newXPos
 }
 
-func NewYPos(lastPos, lastRotation, pressTime float64) float64 {
-	newYPos := lastPos + pressTime*ENTITY_SPEED*math.Sin(lastRotation*math.Pi/180)
+func NewYPos(lastPos, lastRotation, pressTime float32) float32 {
+	newYPos := lastPos + pressTime*ENTITY_SPEED*float32(math.Sin(float64(lastRotation*math.Pi/180)))
 	if newYPos < ENTITY_RADIUS {
 		newYPos = ENTITY_RADIUS
 	}

@@ -1,12 +1,11 @@
-package game
+package center
 
-import (
-	"github.com/0990/goserver/server"
-)
+import "github.com/0990/goserver/server"
 
 var Server *server.Server
-var GMgr *GameMgr
+
 var UMgr *UserMgr
+var GMgr *GameMgr
 
 func Init(serverID int32) error {
 	s, err := server.NewServer(serverID)
@@ -15,12 +14,11 @@ func Init(serverID int32) error {
 	}
 	Server = s
 	registerHandler()
-	GMgr = NewGameMgr(s.Worker())
+	GMgr = NewGameMgr()
 	UMgr = NewUserMgr()
 	return nil
 }
 
 func Run() {
 	Server.Run()
-	GMgr.Start()
 }

@@ -4,3 +4,64 @@ package smsg;
 message Server2AllSession{
     bytes data = 1;
 }
+
+message GaCeReqLogin{
+    int32 sesid = 1;
+    string token = 2;
+}
+
+message GaCeRespLogin{
+    enum Error{
+        Invalid = 0;
+    }
+    uint64 userID = 1;
+    Error err = 2;
+    string token = 3;
+}
+
+message CeGaBindGameServer{
+    int32 sesid = 1;
+    int32 gameserverid = 2;
+}
+
+message CeGamReqJoinGame{
+    uint64 userid =1;
+    int32 sesid = 2;
+    string nickname = 3;
+    int32 gateServerid = 4;
+}
+
+message CeGamRespJoinGame{
+    enum Error{
+        Invalid = 0;
+        GameNotExist = 1;
+    }
+    Error err = 1;
+    int64 gameid =2;
+}
+
+message GamCeNoticeGameStart{
+    int64 gameid = 1;
+}
+
+message GamCeNoticeGameEnd{
+    int64 gameid  = 1;
+}
+
+message CeGameUserDisconnect{
+    uint64 userid = 1;
+}
+
+message CeGameUserReconnect{
+    uint64 userid = 1;
+    int32 gateID = 2;
+    int32 sessionID = 3;
+}
+
+message GaCeUserDisconnect{
+    int32 sessionID = 1;
+}
+
+message CeGaCloseSession{
+    int32 sessionID = 1;
+}
