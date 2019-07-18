@@ -14,6 +14,8 @@ func registerRoute() {
 	Route2ServerID((*cmsg.ReqShoot)(nil), conf.GameServerID)
 	Route2ServerID((*cmsg.ReqGameScene)(nil), conf.GameServerID)
 	Route2ServerID((*cmsg.ReqJoinGame)(nil), conf.CenterServerID)
+	//enter是加入成功后，请求进入游戏的消息
+	Route2ServerID((*cmsg.ReqEnterGame)(nil), conf.CenterServerID)
 }
 
 func Route2ServerID(msg proto.Message, serverID int32) {

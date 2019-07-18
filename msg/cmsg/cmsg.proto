@@ -12,6 +12,7 @@ message RespLogin{
     Error err = 1;
     uint64 userID = 2;
     string token = 3;
+    bool inGame = 4;//是否正在游戏中
 }
 
 message ReqJoinGame{
@@ -25,9 +26,18 @@ message RespJoinGame{
         AlreadyInGame = 2;
     }
     Error err = 1;
+    string nickname = 2;
 }
 
-message SNoticeEnterGame{
+message ReqEnterGame{
+
+}
+
+message RespEnterGame{
+
+    enum Error{
+        Invalid = 0;
+    }
     message Config{
         int32 bulletLiveTime = 1;
         float rotationDelta = 2;
@@ -36,13 +46,13 @@ message SNoticeEnterGame{
         int32 noticePosDuration = 5;
         int32 protectTime = 6;
         int32 entityRadius = 7;
-        int32 gameStartTime = 8;
     }
 
-    Config config = 2;
-    int32 entityID = 3;
-    int32 gameLeftSec = 4;
-    string nickname = 5;
+    Config config = 1;
+    int32 entityID = 2;
+    int32 gameLeftSec = 3;
+    bool dead = 4;//是否已挂
+    Error err = 5;
 }
 
 message Rank{
@@ -51,6 +61,8 @@ message Rank{
         int32 score = 2;
         int32 rank = 3;
         int32 killCount = 4;
+        string headImgUrl = 5;
+        string nickname = 6;
     }
     repeated Item list = 1;
 }
@@ -104,7 +116,7 @@ message RespGameScene{
         int32 score = 6;
         bool protected = 7;
     }
-    repeated Entity entitys = 1;
+    repeated Entity entities = 1;
     int32 gameLeftSec = 2;
     Error err = 3;
 }
@@ -115,7 +127,7 @@ message SNoticeShoot{
     float y = 2;
     float rotation = 3;
     int32 bulletID = 4;
-    uint64 creatorUserID = 5;
+    int32 creatorEntityID = 5;
 }
 
 message SNoticeWorldChange{
@@ -126,8 +138,8 @@ message SNoticeWorldChange{
         int32 killCount = 4;
     }
     repeated int32 deleteBullets = 1;
-    repeated int32 deleteEntitys = 2;
-    repeated Entity changedEntitys = 3;
+    repeated int32 deleteEntities = 2;
+    repeated Entity changedEntities = 3;
 }
 
 
@@ -138,11 +150,19 @@ message SNoticeWorldPos{
         float y = 3;
         float rotation = 4;
     }
-    repeated Entity entitys = 1;
+    repeated Entity entities = 1;
+    int32 lastProcessedInputID = 2;
 }
 
-
-message SNoticeGameReconnect{
+message SNoticeNewEntity{
+    int32 entityID = 1;
+    int32 accountType = 2;
+    string headImgUrl = 3;
+    float rotation = 4;
+    int32 hp = 5;
+    int32 score = 6;
+    bool dead = 7;
+    bool protected = 8;
 }
 
 

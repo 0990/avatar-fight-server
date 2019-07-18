@@ -31,6 +31,7 @@ func Login(session network.Session, msg *cmsg.ReqLogin) {
 
 		resp.UserID = userID
 		resp.Token = cbResp.Token
+		resp.InGame = cbResp.InGame
 
 		SMgr.SetSessionLogined(session.ID(), userID)
 		return

@@ -17,6 +17,7 @@ message GaCeRespLogin{
     uint64 userID = 1;
     Error err = 2;
     string token = 3;
+    bool inGame = 4;
 }
 
 message CeGaBindGameServer{

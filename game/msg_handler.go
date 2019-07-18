@@ -9,6 +9,7 @@ import (
 func registerHandler() {
 	Server.RegisterRequestMsgHandler(JoinGame)
 	Server.RegisterSessionMsgHandler(ReqGameScene)
+	Server.RegisterSessionMsgHandler(ReqEnterGame)
 	Server.RegisterSessionMsgHandler(ReqMove)
 	Server.RegisterSessionMsgHandler(ReqJump)
 	Server.RegisterSessionMsgHandler(ReqShoot)
@@ -41,6 +42,18 @@ func JoinGame(server rpc.RequestServer, req *smsg.CeGamReqJoinGame) {
 	server.Answer(resp)
 }
 
+func ReqEnterGame(session rpc.Session, req *cmsg.ReqEnterGame) {
+	resp := &cmsg.RespGameScene{}
+	id := session.GateSessionID()
+	user, ok := UMgr.GetUserBySession(id)
+	if !ok {
+		resp.Err = cmsg.RespGameScene_GameNotExist
+		session.SendMsg(resp)
+		return
+	}
+	user.game.OnReqEnterGame(session, user.userID, req)
+}
+
 func ReqGameScene(session rpc.Session, req *cmsg.ReqGameScene) {
 	resp := &cmsg.RespGameScene{}
 	id := session.GateSessionID()
@@ -50,7 +63,7 @@ func ReqGameScene(session rpc.Session, req *cmsg.ReqGameScene) {
 		session.SendMsg(resp)
 		return
 	}
-	user.game.OnReqGameScene(session, req)
+	user.game.OnReqGameScene(session, user.userID, req)
 }
 
 //TODO 以下三个消息可以利用reflect复用公共代码

@@ -47,12 +47,9 @@ func Login(peer rpc.RequestServer, req *smsg.GaCeReqLogin) {
 	resp := &smsg.GaCeRespLogin{
 		UserID: u.userid,
 		Token:  u.token,
+		InGame: u.game != nil,
 	}
 	peer.Answer(resp)
-
-	if u.game != nil {
-		Server.RPCSession(gateSessionID).SendMsg(&cmsg.SNoticeGameReconnect{})
-	}
 }
 
 func JoinGame(session rpc.Session, req *cmsg.ReqJoinGame) {
@@ -71,7 +68,7 @@ func JoinGame(session rpc.Session, req *cmsg.ReqJoinGame) {
 		return
 	}
 
-	Server.GetServerById(102).Request(&smsg.CeGamReqJoinGame{
+	Server.GetServerById(conf.GameServerID).Request(&smsg.CeGamReqJoinGame{
 		Userid:   u.userid,
 		Nickname: req.Nickname,
 	}, func(cbResp *smsg.CeGamRespJoinGame, err error) {
@@ -83,10 +80,12 @@ func JoinGame(session rpc.Session, req *cmsg.ReqJoinGame) {
 		gameID := cbResp.Gameid
 		u.game = GMgr.GetGame(gameID)
 		GMgr.AddGameUser(gameID, u.userid)
+		//TODO 多游戏服时，要在gate绑定game服
 		//Server.GetServerById(100).Send(&smsg.CeGaBindGameServer{
 		//	Sesid:        0,
 		//	Gameserverid: 102,
 		//})
+		resp.Nickname = req.Nickname
 		session.SendMsg(resp)
 		return
 	})
