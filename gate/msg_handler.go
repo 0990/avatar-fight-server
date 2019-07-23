@@ -1,6 +1,7 @@
 package gate
 
 import (
+	"fmt"
 	"github.com/0990/avatar-fight-server/conf"
 	"github.com/0990/avatar-fight-server/msg/cmsg"
 	"github.com/0990/avatar-fight-server/msg/smsg"
@@ -11,6 +12,8 @@ import (
 func registerHandler() {
 	Gate.RegisterNetWorkEvent(onConnect, onDisconnect)
 	Gate.RegisterSessionMsgHandler(Login)
+
+	//Gate.RegisterSessionMsgHandler(Test)
 }
 
 func Login(session network.Session, msg *cmsg.ReqLogin) {
@@ -60,4 +63,9 @@ func NoticeSessionClose(server rpc.Server, req *smsg.CeGaCloseSession) {
 	}
 	s.session.Close()
 	delete(SMgr.sesID2Session, req.SessionID)
+}
+
+func Test(session network.Session, msg *cmsg.ReqJoinGame) {
+	fmt.Println("gate test", msg.Nickname)
+	Gate.GetServerById(conf.CenterServerID).RouteSession2Server(session.ID(), msg)
 }

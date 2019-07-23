@@ -55,6 +55,11 @@ func (p *UserMgr) AddUser(s rpc.GateSessionID) *User {
 	return u
 }
 
+func (p *UserMgr) UpdateUserSession(u *User, s rpc.GateSessionID) {
+	u.session = s
+	p.ses2User[s] = u
+}
+
 func (p *UserMgr) FindUserByToken(token string) (*User, bool) {
 	v, ok := p.token2User[token]
 	return v, ok

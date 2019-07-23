@@ -18,7 +18,8 @@ import (
 type OverReason int8
 
 const (
-	Killed OverReason = iota
+	Invalid OverReason = iota
+	Killed
 	Normal
 )
 
@@ -104,6 +105,23 @@ type Entity struct {
 //	}
 //}
 
+func (p *Entity) ToCMsg() *cmsg.Entity {
+	return &cmsg.Entity{
+		Id:          p.id,
+		AccountType: int32(p.u.accountType),
+		HeadImgUrl:  p.u.headImgUrl,
+		Rotation:    p.rotation,
+		Hp:          p.hp,
+		Score:       p.score,
+		KillCount:   p.killCount,
+		Dead:        p.dead,
+		Protected:   p.isProtected,
+		X:           p.x,
+		Y:           p.y,
+		Nickname:    p.u.nickname,
+	}
+}
+
 func (p *Entity) KilledBy(killerUserID uint64) {
 	var killer *Entity
 	killer = p.game.userID2entity[killerUserID]
@@ -127,11 +145,9 @@ func (p *Entity) KilledBy(killerUserID uint64) {
 		killerInfo.Hp = killer.hp
 	}
 
-	leftTime := GAME_ROUND_SEC + p.game.startTimeSec - util.GetCurrentSec()
-
 	msg := &cmsg.SNoticeGameOver{
 		OverReason:  int32(Killed),
-		GameLeftSec: int32(leftTime),
+		GameLeftSec: p.game.gameLeftSec(),
 		Killer:      killerInfo,
 	}
 	p.u.Send2Client(msg)
@@ -157,9 +173,9 @@ func (p *Game) Run() {
 	p.worker.AfterPost(GAME_ROUND_SEC*time.Second, p.GameNormalEnd)
 
 	p.printTicker = p.worker.NewTicker(time.Second*1, func() {
-		fmt.Println("entity count", len(p.userID2entity))
-		fmt.Println("alive entity count", len(p.aliveUserID2Entity))
-		fmt.Println("workerLen", p.worker.Len())
+		//fmt.Println("entity count", len(p.userID2entity))
+		//fmt.Println("alive entity count", len(p.aliveUserID2Entity))
+		//fmt.Println("workerLen", p.worker.Len())
 	})
 }
 
@@ -258,6 +274,11 @@ func (p *Game) newUserID() uint64 {
 	return p.userSeqID
 }
 
+func (p *Game) newEntityID() int32 {
+	p.entitySeqID++
+	return p.entitySeqID
+}
+
 func (p *Game) createRobot() {
 	p.robotCount++
 	nickname := fmt.Sprintf("robot%d", p.robotCount)
@@ -319,10 +340,13 @@ func (p *Game) createEntity(u *User) *Entity {
 	x, y := p.GetRandPosition()
 
 	e := &Entity{}
+	e.id = p.newEntityID()
 	e.x = x
 	e.y = y
 	e.u = u
 	e.game = p
+	e.hp = 6
+	e.lastProcessedInput = -1
 	e.createdTime = util.GetCurrentSec()
 	e.isProtected = true
 	e.lastShootTime = util.GetCurrentSec()
@@ -332,6 +356,10 @@ func (p *Game) createEntity(u *User) *Entity {
 	})
 	p.userID2entity[u.userID] = e
 	p.aliveUserID2Entity[u.userID] = e
+
+	p.Send2All(&cmsg.SNoticeNewEntity{
+		Entity: e.ToCMsg(),
+	})
 	return e
 }
 
@@ -462,7 +490,7 @@ func (p *Game) CheckCollision() {
 				if bullet.creatorUserID == entity.u.userID {
 					continue
 				}
-				distance := util.Distance(bullet.x, entity.x, bullet.y, entity.y)
+				distance := util.Distance(bullet.x, bullet.y, entity.x, entity.y)
 				if distance > ENTITY_RADIUS {
 					continue
 				}
@@ -531,7 +559,7 @@ func (p *Game) CheckCollision() {
 	if len(delBullets) > 0 || len(delEntities) > 0 || len(dirtyUserIds) > 0 {
 		changeEntitys := make([]*cmsg.SNoticeWorldChange_Entity, 0, len(dirtyUserIds))
 		for _, userID := range dirtyUserIds {
-			if entity, exist := p.userID2entity[userID]; exist {
+			if entity, exist := p.userID2entity[userID]; exist && !entity.dead {
 				changeEntitys = append(changeEntitys, &cmsg.SNoticeWorldChange_Entity{
 					Id:        entity.id,
 					Score:     entity.score,
@@ -553,7 +581,7 @@ func (p *Game) CheckCollision() {
 
 func (p *Game) Send2All(msg proto.Message) {
 	for _, v := range p.aliveUserID2Entity {
-		if v.u.accountType == ROBOT || !v.clientSceneReady {
+		if !v.clientSceneReady {
 			continue
 		}
 		v.u.Send2Client(msg)
@@ -596,17 +624,9 @@ func (p *Game) OnReqGameScene(session rpc.Session, userID uint64, msg *cmsg.ReqG
 	}
 	entity.clientSceneReady = true
 
-	entitys := make([]*cmsg.RespGameScene_Entity, 0, len(p.aliveUserID2Entity))
+	entitys := make([]*cmsg.Entity, 0, len(p.aliveUserID2Entity))
 	for _, e := range p.aliveUserID2Entity {
-		entitys = append(entitys, &cmsg.RespGameScene_Entity{
-			AccountType: int32(e.u.accountType),
-			Nickname:    e.u.nickname,
-			HeadImgUrl:  e.u.headImgUrl,
-			EntityID:    e.id,
-			Hp:          e.hp,
-			Score:       e.score,
-			Protected:   e.isProtected,
-		})
+		entitys = append(entitys, e.ToCMsg())
 	}
 
 	resp.Entities = entitys

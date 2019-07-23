@@ -4,6 +4,7 @@ import (
 	"github.com/0990/avatar-fight-server/msg/cmsg"
 	"github.com/0990/avatar-fight-server/msg/smsg"
 	"github.com/0990/goserver/rpc"
+	"github.com/sirupsen/logrus"
 )
 
 func registerHandler() {
@@ -43,11 +44,12 @@ func JoinGame(server rpc.RequestServer, req *smsg.CeGamReqJoinGame) {
 }
 
 func ReqEnterGame(session rpc.Session, req *cmsg.ReqEnterGame) {
-	resp := &cmsg.RespGameScene{}
+	resp := &cmsg.RespEnterGame{}
 	id := session.GateSessionID()
 	user, ok := UMgr.GetUserBySession(id)
 	if !ok {
-		resp.Err = cmsg.RespGameScene_GameNotExist
+		logrus.Error("session not existed")
+		//resp.Err = cmsg.RespGameScene_GameNotExist
 		session.SendMsg(resp)
 		return
 	}

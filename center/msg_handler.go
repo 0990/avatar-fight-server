@@ -32,7 +32,7 @@ func Login(peer rpc.RequestServer, req *smsg.GaCeReqLogin) {
 			UMgr.RemoveSession(u.session)
 		}
 		u.online = true
-		u.SetSession(gateSessionID)
+		UMgr.UpdateUserSession(u, gateSessionID)
 		if u.game != nil {
 			Server.GetServerById(conf.GameServerID).Send(&smsg.CeGameUserReconnect{
 				Userid:    u.userid,
@@ -69,8 +69,10 @@ func JoinGame(session rpc.Session, req *cmsg.ReqJoinGame) {
 	}
 
 	Server.GetServerById(conf.GameServerID).Request(&smsg.CeGamReqJoinGame{
-		Userid:   u.userid,
-		Nickname: req.Nickname,
+		Userid:       u.userid,
+		Nickname:     req.Nickname,
+		GateServerid: u.session.GateID,
+		Sesid:        u.session.SesID,
 	}, func(cbResp *smsg.CeGamRespJoinGame, err error) {
 		if err != nil {
 			resp.Err = 2

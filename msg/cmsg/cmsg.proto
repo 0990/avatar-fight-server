@@ -106,16 +106,6 @@ message RespGameScene{
         Invalid = 0;
         GameNotExist = 1;
     }
-
-    message Entity{
-        int32 entityID = 1;
-        int32 accountType = 2;
-        string nickname = 3;
-        string headImgUrl = 4;
-        int32 hp = 5;
-        int32 score = 6;
-        bool protected = 7;
-    }
     repeated Entity entities = 1;
     int32 gameLeftSec = 2;
     Error err = 3;
@@ -154,15 +144,23 @@ message SNoticeWorldPos{
     int32 lastProcessedInputID = 2;
 }
 
-message SNoticeNewEntity{
-    int32 entityID = 1;
+message Entity{
+    int32 id = 1;
     int32 accountType = 2;
     string headImgUrl = 3;
     float rotation = 4;
     int32 hp = 5;
     int32 score = 6;
-    bool dead = 7;
-    bool protected = 8;
+    int32 killCount = 7;
+    bool dead = 8;
+    bool protected = 9;
+    float x = 10;
+    float y = 11;
+    string nickname = 12;
+}
+
+message SNoticeNewEntity{
+    Entity entity = 1;
 }
 
 

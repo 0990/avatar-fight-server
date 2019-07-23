@@ -88,5 +88,8 @@ type User struct {
 }
 
 func (p *User) Send2Client(msg proto.Message) {
+	if p.accountType == ROBOT {
+		return
+	}
 	Server.RPCSession(p.sessionID).SendMsg(msg)
 }
