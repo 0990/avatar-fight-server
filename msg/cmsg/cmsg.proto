@@ -95,7 +95,7 @@ message ReqJump{
 
 }
 
-//请求游戏断线重连
+//请求游戏场景信息
 message ReqGameScene{
 
 }

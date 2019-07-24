@@ -645,6 +645,7 @@ func (p *Game) OnReqEnterGame(session rpc.Session, userID uint64, msg *cmsg.ReqE
 
 	if entity.dead {
 		resp.Dead = true
+		resp.GameLeftSec = p.gameLeftSec()
 		session.SendMsg(resp)
 		return
 	}
