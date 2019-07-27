@@ -9,6 +9,7 @@ import (
 	"github.com/0990/goserver/service"
 	"github.com/golang/protobuf/proto"
 	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 	"math"
 	"math/rand"
 	"sort"
@@ -676,3 +677,21 @@ func (p *Game) OnReqJump(userID uint64, msg *cmsg.ReqJump) {
 func (p *Game) OnReqShoot(userID uint64, msg *cmsg.ReqShoot) {
 	p.entityShoot(userID)
 }
+
+func (p *Game) OnUserDisconnect(userID uint64) {
+	entity, exist := p.userID2entity[userID]
+	if !exist {
+		logrus.WithField("userID", userID).Error("game OnUserDisconnect user not existed")
+		return
+	}
+	entity.clientSceneReady = false
+}
+
+//func (p *Game) OnUserReconnect(userID uint64) {
+//	entity, exist := p.userID2entity[userID]
+//	if !exist {
+//		logrus.WithField("userID", userID).Error("game OnUserDisconnect user not existed")
+//		return
+//	}
+//	entity.clientSceneReady = false
+//}

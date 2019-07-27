@@ -31,9 +31,13 @@ func Login(peer rpc.RequestServer, req *smsg.GaCeReqLogin) {
 			})
 			UMgr.RemoveSession(u.session)
 		}
-		u.online = true
-		UMgr.UpdateUserSession(u, gateSessionID)
+
 		if u.game != nil {
+			if u.online {
+				Server.GetServerById(conf.GameServerID).Send(&smsg.CeGameUserDisconnect{
+					Userid: u.userid,
+				})
+			}
 			Server.GetServerById(conf.GameServerID).Send(&smsg.CeGameUserReconnect{
 				Userid:    u.userid,
 				GateID:    gateSessionID.GateID,
@@ -41,6 +45,8 @@ func Login(peer rpc.RequestServer, req *smsg.GaCeReqLogin) {
 			})
 		}
 
+		u.online = true
+		UMgr.UpdateUserSession(u, gateSessionID)
 	} else {
 		u = UMgr.AddUser(gateSessionID)
 	}

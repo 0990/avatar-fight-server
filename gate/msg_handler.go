@@ -7,13 +7,14 @@ import (
 	"github.com/0990/avatar-fight-server/msg/smsg"
 	"github.com/0990/goserver/network"
 	"github.com/0990/goserver/rpc"
+	"time"
 )
 
 func registerHandler() {
 	Gate.RegisterNetWorkEvent(onConnect, onDisconnect)
 	Gate.RegisterSessionMsgHandler(Login)
-
 	//Gate.RegisterSessionMsgHandler(Test)
+	Gate.RegisterServerHandler(NoticeSessionClose)
 }
 
 func Login(session network.Session, msg *cmsg.ReqLogin) {
@@ -61,7 +62,13 @@ func NoticeSessionClose(server rpc.Server, req *smsg.CeGaCloseSession) {
 	if !exist {
 		return
 	}
-	s.session.Close()
+	s.session.SendMsg(&cmsg.SNoticeKickOut{
+		Reason: cmsg.SNoticeKickOut_Relogin,
+	})
+	//TODO 客户端有问题，暂时服务端过会再关
+	Gate.AfterPost(time.Second, func() {
+		s.session.Close()
+	})
 	delete(SMgr.sesID2Session, req.SessionID)
 }
 

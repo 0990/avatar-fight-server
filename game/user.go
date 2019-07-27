@@ -3,7 +3,6 @@ package game
 import (
 	"github.com/0990/goserver/rpc"
 	"github.com/golang/protobuf/proto"
-	"github.com/sirupsen/logrus"
 )
 
 type AccountType int8
@@ -46,30 +45,13 @@ func (p *UserMgr) DelUser(userID uint64) {
 	delete(p.userID2User, userID)
 }
 
-func (p *UserMgr) SetUserOffline(userID uint64) {
-	u, exist := p.GetUserByUserID(userID)
-	if !exist {
-		logrus.WithField("userid", userID).Error("UserDisconnect user not existed")
-		return
-	}
-
-	delete(p.ses2User, u.sessionID)
-	u.offline = true
-	u.sessionID = rpc.GateSessionID{}
+func (p *UserMgr) DelSession(sessionID rpc.GateSessionID) {
+	delete(p.ses2User, sessionID)
 	return
 }
 
-func (p *UserMgr) SetUserReconnect(userID uint64, sessionID rpc.GateSessionID) {
-	u, exist := p.GetUserByUserID(userID)
-	if !exist {
-		logrus.WithField("userid", userID).Error("UserDisconnect user not existed")
-		return
-	}
-
-	u.offline = false
-	u.sessionID = sessionID
+func (p *UserMgr) AddSession(sessionID rpc.GateSessionID, u *User) {
 	p.ses2User[sessionID] = u
-	return
 }
 
 func (p *UserMgr) AddUser(u *User) {

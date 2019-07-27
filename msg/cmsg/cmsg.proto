@@ -163,4 +163,13 @@ message SNoticeNewEntity{
     Entity entity = 1;
 }
 
+//通知被T出
+message SNoticeKickOut{
+    enum Reason{
+        Invalid = 0;
+        Relogin = 1;//重复登录被T出
+    }
+    Reason reason = 1;
+}
+
 
