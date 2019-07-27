@@ -3,7 +3,8 @@
 点此试玩：http://34.92.209.203
 
 ## 服务器结构
-基于github.com/0990/goserver服务器框架的游戏，有  
+基于github.com/0990/goserver服务器框架的游戏  
+有以下服务构成  
 1,gate服，负责消息转发  
 2,game服，负责游戏逻辑  
 3,center服,中心服，负责玩家管理  
