@@ -19,15 +19,33 @@ func registerHandler() {
 }
 
 func UserDisconnect(server rpc.Server, req *smsg.CeGameUserDisconnect) {
-	UMgr.SetUserOffline(req.Userid)
+	userID := req.Userid
+	user, ok := UMgr.GetUserByUserID(userID)
+	if !ok {
+		logrus.Error("session not existed")
+		return
+	}
+	user.offline = true
+	user.sessionID = rpc.GateSessionID{}
+	UMgr.DelSession(user.sessionID)
+	user.game.OnUserDisconnect(userID)
 }
 
 func UserReconnect(server rpc.Server, req *smsg.CeGameUserReconnect) {
-	session := rpc.GateSessionID{
+	sessionID := rpc.GateSessionID{
 		GateID: req.GateID,
 		SesID:  req.SessionID,
 	}
-	UMgr.SetUserReconnect(req.Userid, session)
+	userID := req.Userid
+	user, ok := UMgr.GetUserByUserID(userID)
+	if !ok {
+		logrus.Error("session not existed")
+		return
+	}
+	user.offline = false
+	user.sessionID = sessionID
+	UMgr.AddSession(sessionID, user)
+	//user.game.OnUserReconnect(userID)
 }
 
 func JoinGame(server rpc.RequestServer, req *smsg.CeGamReqJoinGame) {

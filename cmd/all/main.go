@@ -7,11 +7,12 @@ import (
 	"github.com/0990/avatar-fight-server/conf"
 	"github.com/0990/avatar-fight-server/game"
 	"github.com/0990/avatar-fight-server/gate"
+	"github.com/sirupsen/logrus"
 	"os"
 	"os/signal"
 )
 
-var addr = flag.String("addr", "localhost:8080", "http service address")
+var addr = flag.String("addr", "0.0.0.0:9000", "http service address")
 
 func main() {
 	flag.Parse()
@@ -37,6 +38,7 @@ func main() {
 	}
 	game.Run()
 
+	logrus.Info("start success...")
 	c := make(chan os.Signal, 1)
 	signal.Notify(c)
 	s := <-c
