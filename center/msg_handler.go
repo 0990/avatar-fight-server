@@ -24,9 +24,8 @@ func Login(peer rpc.RequestServer, req *smsg.GaCeReqLogin) {
 	}
 	//这里先简化处理，没找到就新建个玩家
 	if exist {
-		//TODO 考虑重复登录情况
 		if u.online {
-			Server.GetServerById(conf.GateServerID).Send(&smsg.CeGaCloseSession{
+			Server.GetServerById(conf.GateServerID).Notify(&smsg.CeGaCloseSession{
 				SessionID: u.session.SesID,
 			})
 			UMgr.RemoveSession(u.session)
@@ -34,12 +33,12 @@ func Login(peer rpc.RequestServer, req *smsg.GaCeReqLogin) {
 
 		if u.game != nil {
 			if u.online {
-				Server.GetServerById(conf.GameServerID).Send(&smsg.CeGameUserDisconnect{
-					Userid: u.userid,
+				Server.GetServerById(conf.GameServerID).Notify(&smsg.CeGameUserDisconnect{
+					Userid: u.userID,
 				})
 			}
-			Server.GetServerById(conf.GameServerID).Send(&smsg.CeGameUserReconnect{
-				Userid:    u.userid,
+			Server.GetServerById(conf.GameServerID).Notify(&smsg.CeGameUserReconnect{
+				Userid:    u.userID,
 				GateID:    gateSessionID.GateID,
 				SessionID: gateSessionID.SesID,
 			})
@@ -51,7 +50,7 @@ func Login(peer rpc.RequestServer, req *smsg.GaCeReqLogin) {
 		u = UMgr.AddUser(gateSessionID)
 	}
 	resp := &smsg.GaCeRespLogin{
-		UserID: u.userid,
+		UserID: u.userID,
 		Token:  u.token,
 		InGame: u.game != nil,
 	}
@@ -75,7 +74,7 @@ func JoinGame(session rpc.Session, req *cmsg.ReqJoinGame) {
 	}
 
 	Server.GetServerById(conf.GameServerID).Request(&smsg.CeGamReqJoinGame{
-		Userid:       u.userid,
+		Userid:       u.userID,
 		Nickname:     req.Nickname,
 		GateServerid: u.session.GateID,
 		Sesid:        u.session.SesID,
@@ -87,7 +86,7 @@ func JoinGame(session rpc.Session, req *cmsg.ReqJoinGame) {
 		}
 		gameID := cbResp.Gameid
 		u.game = GMgr.GetGame(gameID)
-		GMgr.AddGameUser(gameID, u.userid)
+		GMgr.AddGameUser(gameID, u.userID)
 		//TODO 多游戏服时，要在gate绑定game服
 		//Server.GetServerById(100).Send(&smsg.CeGaBindGameServer{
 		//	Sesid:        0,
@@ -126,8 +125,8 @@ func UserDisconnect(server rpc.Server, req *smsg.GaCeUserDisconnect) {
 	u.online = false
 	UMgr.RemoveSession(session)
 	if u.game != nil {
-		Server.GetServerById(conf.GameServerID).Send(&smsg.CeGameUserDisconnect{
-			Userid: u.userid,
+		Server.GetServerById(conf.GameServerID).Notify(&smsg.CeGameUserDisconnect{
+			Userid: u.userID,
 		})
 	}
 }

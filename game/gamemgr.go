@@ -35,7 +35,7 @@ func (p *GameMgr) CreateNewGame() {
 	p.gameid2Game[p.gameSeqid] = game
 	p.currGame = game
 	game.Run()
-	Server.GetServerById(conf.CenterServerID).Send(&smsg.GamCeNoticeGameStart{
+	Server.GetServerById(conf.CenterServerID).Notify(&smsg.GamCeNoticeGameStart{
 		Gameid: game.gameID,
 	})
 	return
@@ -46,7 +46,7 @@ func (p *GameMgr) onGameEnd(g *Game) {
 		UMgr.DelUser(entity.u.userID)
 	}
 	delete(p.gameid2Game, g.gameID)
-	Server.GetServerById(conf.CenterServerID).Send(&smsg.GamCeNoticeGameEnd{
+	Server.GetServerById(conf.CenterServerID).Notify(&smsg.GamCeNoticeGameEnd{
 		Gameid: g.gameID,
 	})
 	p.CreateNewGame()

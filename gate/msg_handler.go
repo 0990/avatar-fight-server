@@ -51,7 +51,7 @@ func onConnect(conn network.Session) {
 
 func onDisconnect(conn network.Session) {
 	//TODO 这里先简单处理，理论上没有登录上的玩家不用向中心服务器通知离线事件
-	Gate.GetServerById(conf.CenterServerID).Send(&smsg.GaCeUserDisconnect{
+	Gate.GetServerById(conf.CenterServerID).Notify(&smsg.GaCeUserDisconnect{
 		SessionID: conn.ID(),
 	})
 	delete(SMgr.sesID2Session, conn.ID())
