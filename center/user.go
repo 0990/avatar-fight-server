@@ -9,7 +9,7 @@ type UserMgr struct {
 	token2User map[string]*User
 	id2User    map[uint64]*User
 	ses2User   map[rpc.GateSessionID]*User //TODO rpc.Session作为key的情况
-	userSeqid  uint64
+	userSeqID  uint64
 }
 
 func NewUserMgr() *UserMgr {
@@ -21,7 +21,7 @@ func NewUserMgr() *UserMgr {
 }
 
 type User struct {
-	userid  uint64
+	userID  uint64
 	session rpc.GateSessionID
 	token   string
 	online  bool
@@ -35,8 +35,8 @@ func (u *User) SetSession(s rpc.GateSessionID) {
 }
 
 func (p *UserMgr) NewUserID() uint64 {
-	p.userSeqid++
-	return p.userSeqid
+	p.userSeqID++
+	return p.userSeqID
 }
 
 func (p *UserMgr) AddUser(s rpc.GateSessionID) *User {
@@ -44,7 +44,7 @@ func (p *UserMgr) AddUser(s rpc.GateSessionID) *User {
 	userID := p.NewUserID()
 
 	u := &User{
-		userid:  userID,
+		userID:  userID,
 		session: s,
 		token:   token,
 		online:  true,
