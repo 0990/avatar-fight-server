@@ -1,6 +1,6 @@
 # avatar-fight-server
 头像大乱战golang服务端  
-点此试玩：http://34.92.209.203
+点此试玩：http://avatarfight.0990game.tk/
 
 ## 服务器结构
 基于github.com/0990/goserver服务器框架的游戏  
