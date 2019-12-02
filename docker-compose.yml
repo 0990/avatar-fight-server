@@ -1,0 +1,17 @@
+
+version: "3.3"
+
+services:
+        avatar-fight-server:
+                build: .
+                ports:
+                        - "9000:9000"
+                        - "9900:9900"
+                environment:
+                        GOSERVER_NATS_URL: nats://nats-streaming-server:4222
+                depends_on:
+                        - nats-streaming-server
+
+        nats-streaming-server:
+                image: "nats-streaming:0.16.2"
+
