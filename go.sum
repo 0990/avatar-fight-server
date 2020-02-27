@@ -2,12 +2,17 @@ github.com/0990/avatar-fight-server v0.0.0-20191103061225-f8d7a3d7d87c h1:ONWg9J
 github.com/0990/avatar-fight-server v0.0.0-20191103061225-f8d7a3d7d87c/go.mod h1:+uh9ewPKKs2mA70RV+SzkkfUt5XO2/Zreyd+i/mHAOA=
 github.com/0990/goserver v0.0.0-20190908140113-5e76bfc54751 h1:lPNwDPOxuxI/KoCTz7oeeQjcsbgwpqqfS1u/OJs4H00=
 github.com/0990/goserver v0.0.0-20190908140113-5e76bfc54751/go.mod h1:Ib1uGfRH2le95oSza2Z6f+mlZ0BlLmB3Vgn1eSJF1fo=
+github.com/0990/goserver v0.0.0-20200110042102-0ccc9753eacc h1:2LLWDcwOJ8G7yviiUp+OwUNHbija37+8fq88BJLhHJI=
+github.com/0990/goserver v0.0.0-20200110042102-0ccc9753eacc/go.mod h1:/p+/vAM2mnZA5Ytcl9FinUimJN8Kn7yWYVAbBiX2IiU=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/golang/protobuf v1.3.2 h1:6nsPYzhq5kReh6QImI3k5qWzO4PEbvbIW2cwSfR/6xs=
 github.com/golang/protobuf v1.3.2/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=
 github.com/gorilla/websocket v1.4.1 h1:q7AeDBpnBk8AogcD4DSag/Ukw/KV+YhzLj2bP5HvKCM=
 github.com/gorilla/websocket v1.4.1/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
+github.com/konsorten/go-windows-terminal-sequences v1.0.1 h1:mweAR1A6xJ3oS2pRaGiHgQ4OO8tzTaLawm8vnODuwDk=
 github.com/konsorten/go-windows-terminal-sequences v1.0.1/go.mod h1:T0+1ngSBFLxvqU3pZ+m/2kptfBszLMUkC4ZK/EgS/cQ=
+github.com/natefinch/lumberjack v2.0.0+incompatible h1:4QJd3OLAMgj7ph+yZTuX13Ld4UpgHp07nNdFX7mqFfM=
+github.com/natefinch/lumberjack v2.0.0+incompatible/go.mod h1:Wi9p2TTF5DG5oU+6YfsmYQpsTIOm0B1VNzQg9Mw6nPk=
 github.com/nats-io/jwt v0.3.0 h1:xdnzwFETV++jNc4W1mw//qFyJGb2ABOombmZJQS4+Qo=
 github.com/nats-io/jwt v0.3.0/go.mod h1:fRYCDE99xlTsqUzISS1Bi75UBJ6ljOJQOAAu5VglpSg=
 github.com/nats-io/jwt v0.3.2 h1:+RB5hMpXUUA2dfxuhBTEkMOrYmM+gKIZYS1KjSostMI=

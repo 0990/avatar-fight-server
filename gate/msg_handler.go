@@ -1,7 +1,6 @@
 package gate
 
 import (
-	"fmt"
 	"github.com/0990/avatar-fight-server/conf"
 	"github.com/0990/avatar-fight-server/msg/cmsg"
 	"github.com/0990/avatar-fight-server/msg/smsg"
@@ -73,6 +72,5 @@ func NoticeSessionClose(server rpc.Server, req *smsg.CeGaCloseSession) {
 }
 
 func Test(session network.Session, msg *cmsg.ReqJoinGame) {
-	fmt.Println("gate test", msg.Nickname)
 	Gate.GetServerById(conf.CenterServerID).RouteSession2Server(session.ID(), msg)
 }

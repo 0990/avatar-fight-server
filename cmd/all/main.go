@@ -7,6 +7,7 @@ import (
 	"github.com/0990/avatar-fight-server/conf"
 	"github.com/0990/avatar-fight-server/game"
 	"github.com/0990/avatar-fight-server/gate"
+	"github.com/0990/avatar-fight-server/logconfig"
 	"github.com/0990/goserver"
 	"github.com/sirupsen/logrus"
 	"net/http"
@@ -22,8 +23,10 @@ var pprofAddr = flag.String("pprofAddr", "0.0.0.0:9900", "http pprof service add
 var gosconf = flag.String("goserver", "", "goserver config file")
 
 //TODO 加woker性能监控和运行时堆栈打印
-
 func main() {
+	//日志初始化
+	logconfig.InitLogrus("af", 10)
+
 	flag.Parse()
 	gosconf, err := goserver.ReadConfig(*gosconf)
 	if err != nil {

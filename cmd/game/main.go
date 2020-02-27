@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"github.com/0990/avatar-fight-server/conf"
 	"github.com/0990/avatar-fight-server/game"
 	"github.com/0990/goserver"
@@ -29,5 +28,5 @@ func main() {
 	game.Run()
 
 	s := <-c
-	fmt.Println("Got signal:", s)
+	logrus.Info("Got signal:", s)
 }
