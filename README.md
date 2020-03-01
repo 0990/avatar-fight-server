@@ -1,6 +1,6 @@
 # avatar-fight-server
 头像大乱战golang服务端  
-点此试玩：http://af.09900990.xyz:5050/
+[点此试玩](http://af.09900990.xyz:5050)/
 
 ## 服务器结构
 基于github.com/0990/goserver服务器框架的游戏  
@@ -10,10 +10,10 @@
 3,center服,中心服，负责玩家管理  
 
 ## 编译运行
-1，先运行nats-streaming-server(https://github.com/nats-io/nats-streaming-server)  
+1，先运行[nats-streaming-server](https://github.com/nats-io/nats-streaming-server)  
 2，执行build.bat 会生成bin/avatar-fight-server.exe,运行即可 
  
-客户端代码在此：https://github.com/0990/avatar-fight-client
+[客户端代码在此](https://github.com/0990/avatar-fight-client)
 
 ## 说明
 1,服务器架构上支持多game服，目前未完善此部分  
