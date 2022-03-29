@@ -14,6 +14,7 @@ func registerHandler() {
 	Gate.RegisterSessionMsgHandler(Login)
 	//Gate.RegisterSessionMsgHandler(Test)
 	Gate.RegisterServerHandler(NoticeSessionClose)
+	Gate.RegisterRequestMsgHandler(Metric)
 }
 
 func Login(session network.Session, msg *cmsg.ReqLogin) {
@@ -73,4 +74,9 @@ func NoticeSessionClose(server rpc.Server, req *smsg.CeGaCloseSession) {
 
 func Test(session network.Session, msg *cmsg.ReqJoinGame) {
 	Gate.GetServerById(conf.CenterServerID).RouteSession2Server(session.ID(), msg)
+}
+
+func Metric(peer rpc.RequestServer, req *smsg.AdReqMetrics) {
+	resp := &smsg.AdRespMetrics{}
+	defer peer.Answer(resp)
 }

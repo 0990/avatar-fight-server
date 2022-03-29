@@ -9,6 +9,7 @@ import (
 
 func registerHandler() {
 	Server.RegisterRequestMsgHandler(JoinGame)
+	Server.RegisterRequestMsgHandler(Metric)
 	Server.RegisterSessionMsgHandler(ReqGameScene)
 	Server.RegisterSessionMsgHandler(ReqEnterGame)
 	Server.RegisterSessionMsgHandler(ReqMove)
@@ -112,4 +113,9 @@ func ReqShoot(session rpc.Session, req *cmsg.ReqShoot) {
 		return
 	}
 	user.game.OnReqShoot(user.userID, req)
+}
+
+func Metric(peer rpc.RequestServer, req *smsg.AdReqMetrics) {
+	resp := &smsg.AdRespMetrics{}
+	defer peer.Answer(resp)
 }

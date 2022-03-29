@@ -9,6 +9,7 @@ import (
 
 func registerHandler() {
 	Server.RegisterRequestMsgHandler(Login)
+	Server.RegisterRequestMsgHandler(Metric)
 	Server.RegisterSessionMsgHandler(JoinGame)
 	Server.RegisterServerHandler(NoticeGameStart)
 	Server.RegisterServerHandler(NoticeGameEnd)
@@ -129,4 +130,14 @@ func UserDisconnect(server rpc.Server, req *smsg.GaCeUserDisconnect) {
 			Userid: u.userID,
 		})
 	}
+}
+
+func Metric(peer rpc.RequestServer, req *smsg.AdReqMetrics) {
+	resp := &smsg.AdRespMetrics{}
+	defer peer.Answer(resp)
+
+	resp.Metrics = append(resp.Metrics, &smsg.AdRespMetrics_Metrics{
+		Key:   smsg.AdRespMetrics_OnlineCount,
+		Value: int32(len(UMgr.ses2User)),
+	})
 }
