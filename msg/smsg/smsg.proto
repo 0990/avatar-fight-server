@@ -66,3 +66,22 @@ message GaCeUserDisconnect{
 message CeGaCloseSession{
     int32 sessionID = 1;
 }
+
+message AdReqMetrics{
+    int64 reqTime = 3;
+}
+
+message AdRespMetrics{
+    enum MetricsType{
+        Invalid = 0;
+        OnlineCount = 1;//在线人数
+    }
+
+    message Metrics{
+        MetricsType key = 1;
+        int32 value = 2;
+    }
+
+    repeated Metrics metrics = 1;
+    int64 reqTime = 2;
+}

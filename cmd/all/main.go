@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/0990/avatar-fight-server/admin"
 	"github.com/0990/avatar-fight-server/center"
 	"github.com/0990/avatar-fight-server/conf"
 	"github.com/0990/avatar-fight-server/game"
@@ -19,7 +20,8 @@ import (
 )
 
 var addr = flag.String("addr", "0.0.0.0:9000", "http service address")
-var pprofAddr = flag.String("pprofAddr", "0.0.0.0:9900", "http pprof service address")
+var pprofAddr = flag.String("pprof_addr", "0.0.0.0:9900", "http pprof service address")
+var adminAddr = flag.String("admin_addr", "0.0.0.0:8080", "admin http address")
 var gosconf = flag.String("goserver", "", "goserver config file")
 
 //TODO 加woker性能监控和运行时堆栈打印
@@ -55,6 +57,13 @@ func main() {
 		logrus.WithError(err).Fatal("gosconf", gosconf)
 	}
 	game.Run()
+
+	//admin
+	err = admin.Init(conf.AdminServerID, *adminAddr, *gosconf)
+	if err != nil {
+		logrus.WithError(err).Fatal("gosconf", gosconf)
+	}
+	admin.Run()
 
 	logrus.Info("start success...")
 	c := make(chan os.Signal, 1)
