@@ -10,6 +10,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
+	"io"
 	"math"
 	"math/rand"
 	"sort"
@@ -60,9 +61,9 @@ type Game struct {
 	worker             service.Worker
 	onGameEnd          func(*Game)
 
-	updateTicker  *time.Ticker
-	syncPosTicker *time.Ticker
-	printTicker   *time.Ticker
+	updateTicker  io.Closer
+	syncPosTicker io.Closer
+	printTicker   io.Closer
 }
 
 func newGame(gameID int64, onGameEnd func(*Game), worker service.Worker) *Game {
@@ -181,9 +182,9 @@ func (p *Game) Run() {
 }
 
 func (p *Game) GameNormalEnd() {
-	p.updateTicker.Stop()
-	p.syncPosTicker.Stop()
-	p.printTicker.Stop()
+	p.updateTicker.Close()
+	p.syncPosTicker.Close()
+	p.printTicker.Close()
 
 	//TODO　rankInfo
 	rankInfo := &cmsg.Rank{}
